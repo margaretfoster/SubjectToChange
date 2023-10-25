@@ -1,0 +1,213 @@
+clear all 
+
+/****************************************************************************************************
+MJF: 10/22, 		
+Replication file 2 out of 3 for:
+"The Intractability of Islamist Insurgencies: Islamist Rebels and the Recurrence of Civil War"
+Desirée Nilsson & Isak Svensson
+International Studies Quarterly
+Last updated: 20 April 2021
+Note that dyadep 18502 has been replaced with 28502 due to an error in original termination data
+***************************************************************************************************/
+
+
+*Install packages:
+
+ssc install unique
+ssc install blindschemes, replace all
+ssc install outreg
+ssc install outreg2
+
+****************************************************************************************************
+ 
+* set working directory:
+cd "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication"
+
+* load data:
+
+ use "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication\data\recurrenceplus.dta"
+
+sort dyadid year
+
+
+************************************************
+* STSET FOR SURVIVAL ANALYSIS RECURRENCE as DV
+************************************************
+
+stset end_of_segment, id(dyadid) origin(time first_year_of_peace) enter(time start_of_segment) failure(firstrecur==1) exit(time .)
+
+
+************************************************
+* STSET FOR SURVIVAL ANALYSIS NEW-RECURRENCE as DV
+************************************************
+
+stset end_of_segment, id(dyadid) origin(time first_year_of_peace) enter(time start_of_segment) failure(newrecur1==1) exit(time .)
+
+
+************************************************
+* CREATE LABELS
+************************************************
+
+label variable firstrecur "Recurrence"
+label variable newrecur1 "Recurrence-new"
+label variable islamist "Islamist claim"
+label variable delta1 "Change Year"
+label variable delta1_L2 "Change in Two Years"
+label variable haddelta1 "Had Change |1|" 
+label variable haddelta15 "Had Change |1.5|"
+label variable haddelta2 "Had Change |2|"
+label variable ambig25 "Ambiguity |.25|" 
+label variable ambig50 "Ambiguity |.5|"
+label variable territory "Territory"
+label variable duration "Duration"
+label variable intensitylevel "War"
+label variable number_group "Number of groups"
+label variable transstart "Transnational constituency"
+label variable forinvstart "Foreign involvement"
+label variable strongstart "Strong rebels"
+label variable pa "Peace agreement"
+label variable ca "Ceasefire agreement"
+label variable lowcease "Low activity"
+
+label variable govv "Government victory"
+label variable rebv "Rebel victory"
+label variable pko "Peacekeeping presence"
+label variable anostart "Anocracy"
+label variable lngdppcstart "GDP per capita"
+label variable lnpopstart "Population"
+label variable muslimajstart "Muslim majority"
+label variable oilstart "Oil"
+label variable youthstartap "Youth bulge/adult pop."
+label variable muslimid "Muslim identity"
+
+label variable foreignfighter "Foreign fighters"
+label variable govmilsupport "Government support"
+label variable leftist "Leftist"
+label variable nonislamistrel "Non-Islamist religious claims"
+label variable muslimid "Muslim identity"
+
+label variable anocracy "Anocracy over time"
+label variable lngdppc "GDP pc over time"
+label variable lnpop "Population over time"
+label variable secsup_govgov "Government secondary support"
+label variable rebext "Rebel support"
+
+
+************************************************
+* CONTROL VARIABELS
+************************************************
+
+global X1 territory strongstart oilstart youthstartap muslimajstart
+global X2 _yrs _yrs_sq _yrs_cu
+
+
+************************************************
+* DESCRIPTIVE STATISTICS
+************************************************
+
+*islamist conflicts*
+unique dyadid if islamist==1 | islamist==0 
+*367
+
+unique dyadid if islamist==1 
+*53*
+
+unique dyadid if islamist==0 
+*314
+
+unique dyadid if firstrecur==1 & islamist==1 
+*20 out of 34 in censored data
+
+unique dyadid if firstrecur==1 & haddelta1==1 
+*35 out of 70 
+
+unique dyadid if firstrecur==1 & haddelta15==1 
+*25 of 50
+
+unique dyadid if firstrecur==1 & haddelta2==1 
+*15 out of 29
+
+*number of recurrences-new and recurrences with Islamist actors*
+count if newrecur1==1 
+*52
+
+count if firstrecur==1
+*147
+count if firstrecur==1 & islamist==1
+*34
+
+count if firstrecur==1 & haddelta1==1
+*70
+
+*after 15 years of analysis time*
+unique dyadid if _t>15 & islamist==1
+
+
+************************************************
+* KW Figures
+************************************************
+
+*KM Plots for Islamist (replication); deltas
+
+set scheme plottig
+
+sts graph, legend (cols(1)) by(islamist) ci 
+
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\recurrenceKMPlotI.pdf", as(pdf) name("Graph")
+
+*The following three graphs produce Appendix Figure 12*
+sts graph, legend (cols(1)) by(haddelta1) ci  
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\recurrenceKMPlotd1.pdf", as(pdf) name("Graph")
+
+sts graph, legend (cols(1)) by(haddelta15) ci 
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\recurrenceKMPlotd15.pdf", as(pdf) name("Graph")
+
+
+sts graph, legend (cols(1)) by(haddelta2) ci
+
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\recurrenceKMPlotd2.pdf", as(pdf) name("Graph")
+
+************************************************
+* TABLE 1
+************************************************
+
+//Model 1 see do-file on termination//
+
+stset end_of_segment, id(dyadid) origin(time first_year_of_peace) enter(time start_of_segment) failure(firstrecur==1) exit(time .)
+
+*Model 2*
+
+** Base model specification:
+stcox islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) replace tex frag ctitle(Base Model)
+
+** Adding delta1 measure:
+stcox haddelta1 islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(Small Change)
+
+capture drop sch* sca*
+stcox haddelta1 islamist $X1, cluster(dyadid) strata(order) scaledsch(sca*) schoenfeld(sch*) nohr
+stphtest, rank detail
+
+** Adding delta1.5 measure:
+stcox haddelta15 islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(Medium Change)
+
+** Adding delta2 measure:
+stcox haddelta2 islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag
+
+** Adding "counter" measure:
+stcox counter islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag
+
+** Year-based delta measure:
+stcox delta1 islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag
+
+** Two-year window:
+stcox delta1_L2 islamist $X1, cluster(dyadid) strata(order)  nolog
+outreg using recurrence-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag
+
+** Results tables saved to recurrence-t1.tex; converted to latex using an online converter 
+
