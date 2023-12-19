@@ -2,7 +2,15 @@
 ## Foster, Subject to Change
 ## 2023
 
-## This script calls individual parts of the analysis
+rm(list=ls()) 
+
+library(renv)
+
+renv::init() ## Version control;
+## The important version to be aware of is that
+## quanteda had a major change between versions 3 and 4
+## The results replicate with quanteda V3, which was how it was developed
+
 
 ## Part One: Data Processing
 source("./01measurementFullDataTinyThreshRep.R")
@@ -31,23 +39,17 @@ source("./03analysisFullDataTinyThreshRep.R")
 
 source("./analysisGroupPlotsRep.R") 
 ## Takes: df.yearsumAndRelatedTinyUpdate.Rdata
-## Produces: Illustrative plots
-## (Figures 1-3)
-## NOTE: this accurately reproduces the plots
-## but the version in the manuscript are hand-resized for aesthetics
-
+## Produces: Illustrative plots showing article patterns
+## but the versions in the manuscript were resized for aesthetics
 
 ## Robustness:
 source("./03ClocationPrecisionRep.R")
-
 ## Takes:
 ## 02dfyearsumAndRelatedTinyUpdate.Rdata
 ## MSFS-estimates_full-3x2000.csv #(data from Solis Waggoner)
 
 ## Produces:
-## Appendix Figures 10(1) and 10(2) (lmAbsPropDifL1.pdf and negBinomMedia.pdf)
-
-
+## Appendix Figures 10(1) and 10(2), lmAbsPropDifL1.pdf and negBinomMedia.pdf)
 ## Part Three: Replication
 
 source("./04nsPrepTerminationRep.R")
@@ -71,10 +73,11 @@ source("04nsPrepRecurrance.R")
 ## Derive data for 9 conditions:
 ## minimum 1, 5, 10 articles for
 ## 100%, 90%, 75% of group-years
+
 source("RobustnessPanel.R") 
 ## NB: takes about 4 hours to run
 
-## A few descriptives: 
+## A few descriptive figures: 
 source("06ThresholdPanelDescriptives.R")
 
 ## Analysis (via Stata because of the replication)
@@ -88,3 +91,18 @@ source("06ThresholdPanelDescriptives.R")
 ## 06dRobustnessTerminationComparision_10_9.do
 ## 06dRobustnessTerminationComparision_10_1.do
 
+## Appendix Section 5: Comparison of Topic Configurations
+
+## ONLF and PKK Searck K Plots
+
+source("checkAlternateSpecTiny.R")
+## calls: articleModelingAlt.R
+## Takes the base data, runs STM's searchK() 
+## Saves searchK plots
+## NB: Several hours of runtime
+
+
+## Appendix Figures PKK and AQAL Alternative K
+source("implementAltPKKAQAP.R") 
+## depends on: articleModelingAlt.R
+## Takes: 

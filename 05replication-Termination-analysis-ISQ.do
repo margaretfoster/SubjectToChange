@@ -1,12 +1,17 @@
 clear all
 ****************************************************************************************************
 		
-Replication file 1 out of 3 for:
-"The Intractability of Islamist Insurgencies: Islamist Rebels and the Recurrence of Civil War"
-Desirée Nilsson & Isak Svensson
-International Studies Quarterly
-Last updated: 20 April 2021
-Note that dyadep 18502 has been replaced with 28502 due to an error in original termination data
+*Replication for 
+*"Subject to Change: Quantifying Transformation in Armed Conflict Actors At Scale Using Text"
+*Margaret J. Foster
+*Last updated: December 5, 2023
+
+*The project extends Desirée Nilsson & Isak Svensson's "The Intractability of Islamist Insurgencies:
+* Islamist Rebels and the Recurrence of Civil War"
+*International Studies Quarterly
+
+*As such, the analysis closely follows their replication scripts
+*(Note that dyadep 18502 has been replaced with 28502 due to an error in original termination data)
 
 ***************************************************************************************************/
 
@@ -35,10 +40,8 @@ ssc install  coefplot
 * set working directory:
 * MJF: Set to Replication directory; I'm using my own throughtout
 
-cd "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication"
-
 * load data:
-use "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication\data\terminationplus.dta"
+use  "./data/terminationplus.dta"
 
 sort dyadid year
 
@@ -219,14 +222,14 @@ set scheme lean2
 
 ** Figure 6 of Document ** 
 coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white)
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\TerminationCoefPlotUp.pdf", as(pdf) name("Graph")
+graph export "TerminationCoefPlotUp.pdf", as(pdf) name("Graph")
 
 *Appendix Figure 11*
 coefplot(SmallChange, label(Low Change))(YearofChangeL2, label(Two-Year Window))(YearsSinceLast, label(Years Since Change))(NumChanges, label(Change Frequency)), drop(_cons) xline(0)
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\TerminationCoefPlotExtUp.pdf", as(pdf) name("Graph")
+graph export "TerminationCoefPlotExtUp.pdf", as(pdf) name("Graph")
 
 coefplot(Model2A, label(Binary Condition))(Model2B, label(Change Frequency)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white)
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\TerminationExtraModelsUp.pdf", as(pdf) name("Graph")
+graph export "TerminationExtraModelsUp.pdf", as(pdf) name("Graph")
 
 ************************************************
 * FIGURE 1
@@ -234,16 +237,16 @@ graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\Repli
 
 *Kaplan meier graph with confidence intervals, strata not possible
 sts graph, legend (cols(1)) by(islamist) ci 
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\KM_islamist.pdf", as(pdf) name("Graph")
+graph export "KM_islamist.pdf", as(pdf) name("Graph")
 
 sts graph, legend (cols(1)) by(haddelta1) ci 
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\KM_delta1.pdf", as(pdf) name("Graph")
+graph export "KM_delta1.pdf", as(pdf) name("Graph")
 
 sts graph, legend (cols(1)) by(haddelta15) ci 
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\KM_delta15.pdf", as(pdf) name("Graph")
+graph export "KM_delta15.pdf", as(pdf) name("Graph")
 
 sts graph, legend (cols(1)) by(haddelta2) ci 
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\KM_delta2.pdf", as(pdf) name("Graph")
+graph export "KM_delta2.pdf", as(pdf) name("Graph")
 
 sts graph, legend (cols(1)) by(numchanges) ci 
-graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\KM_numchanges.pdf", as(pdf) name("Graph")
+graph export "KM_numchanges.pdf", as(pdf) name("Graph")

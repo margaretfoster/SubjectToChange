@@ -7,7 +7,6 @@ rm(list=ls())
 library(tidyverse)
 library(haven)
 library(dplyr)
-library(haven)
 
 dataPath <- "./data/"
 
@@ -227,7 +226,7 @@ stargazer(df, summary=FALSE, rownames=FALSE)
 
 sum.df <- terminationplus[,c("numchanges","counter")]
 
-## Figure 4 in text:
+## Figure A12 4 in text:
 stargazer(sum.df,
           covariate.labels =c("Number of Changes",
               "Years Since Change"

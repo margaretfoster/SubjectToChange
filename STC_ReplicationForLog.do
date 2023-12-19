@@ -1,15 +1,24 @@
-****************************************************************************************************		
-* Replication file 3 for:
-* Foster, 'Subject to Change: Quantifying Transformation in Armed Conflict Actors'
-* This file compares inclusion criteria for minimum numbers of articles per group/year
-* Includes a replication of
-* 'The Intractability of Islamist Insurgencies: Islamist Rebels and the Recurrence of Civil War"
-* Desiree Nilsson & Isak Svensson, International Studies Quarterly
+clear all
+****************************************************************************************************
+		
+Replication for 
+"Subject to Change: Quantifying Transformation in Armed Conflict Actors At Scale Using Text"
+Margaret J. Foster
+Last updated: December 5, 2023
+
+The project extends Desirée Nilsson & Isak Svensson's "The Intractability of Islamist Insurgencies:
+ Islamist Rebels and the Recurrence of Civil War"
+International Studies Quarterly
+
+As such, the analysis closely follows their replication scripts
+
+(Note that dyadep 18502 has been replaced with 28502 due to an error in original termination data)
+
 ***************************************************************************************************/
 
-clear all
 
 *To run the do-file you need to install the following:
+
 *1. To generate summary statistics:
 ssc install unique, replace all
 
@@ -30,13 +39,12 @@ ssc install  coefplot
 ****************************************************************************************************
 
 * set working directory:
-* MJF: Set to Replication directory; I'm using my own throughout
+* MJF: Set to Replication directory; I'm using my own throughtout
 
-cd "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication"
+cd "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication"
 
 * load data:
-* Threshold 1 article/year for all years (basically same):
-use "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/data/terminationplus_5_90.dta"
+use "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\STC_Replication\data\terminationplus.dta"
 
 sort dyadid year
 
@@ -48,8 +56,23 @@ stset end_of_segment, id(dyadid) origin(time first_year_of_con) enter(time start
 
 
 ************************************************
-* DESCRIPTIVE STATISTICS
+*
+
+ DESCRIPTIVE STATISTICS
 ************************************************
+
+
+*Islamist conflicts and termination
+unique dyadid if islamist==1 | islamist==0 
+*229 in MJF data subset
+unique dyadid if islamist==1 
+*57 in MJF data subset
+unique dyadid if islamist==0
+*242 in MJF subset
+unique dyadid if term==1 
+*280 in MJF subset
+
+
 ************************************************
 * CREATE LABELS
 ************************************************
@@ -133,7 +156,7 @@ stcox haddelta15 islamist $X1, cluster(dyadid) strata(order)  nolog
 
 estimates store MedChange 
 
-outreg using termination-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(Med Delta)
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(Med Delta)
 
 *Model 2.C- haddelta2*     
 
@@ -141,7 +164,36 @@ stcox haddelta2 islamist $X1, cluster(dyadid) strata(order)  nolog
 
 estimates store HighChange 
 
-outreg using termination-t1.tex, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(High Delta) title(Model Comparisons)
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(High Delta) title(Model Comparisons)
+
+//Model 3: Incorporating time structure
+
+*Model 3.A: "Counter" that resets after a change: 
+
+stcox counter $X1 if haddelta1==1 , cluster(dyadid) strata(order)  nolog 
+
+estimates store YearsSinceLast
+
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(YearsSinceLast) title(Model Comparisons)
+
+* Model 3.B: Year-embedded in data structure:
+* Change in previous year, Not sig
+
+
+stcox delta1 islamist $X1, cluster(dyadid) strata(order)  nolog 
+estimates store YearofChange
+
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(YearofChange) title(Model Comparisons)
+
+* Model 3.C: With Two Year Lag:
+* Change in framing in previous two years. Not sig. Implies that framing changes are not isn't happening right before big changes in conflict dynamics.
+
+stcox delta1_L2 islamist $X1, cluster(dyadid) strata(order)  nolog
+
+estimates store YearofChangeL2
+
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(YearofChangeL2) title(Model Comparisons)
+
 
 //Model 4: Number of changes
 
@@ -165,16 +217,18 @@ estimates store Model2B
 outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(NumChanges) title(Model Comparisons)
 
 
-********************************************
-** Results Plots
-********************************************
-
+* Compare Results:
 
 * d/l lean2 plot for bw graph *
 net install gr0002_3, from(http://www.stata-journal.com/software/sj4-3)
 set scheme lean2 
 
-** Figure A[X] of Document ** 
+** Figure 6 of Document ** 
+coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white)
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\TerminationCoefPlotUp.pdf", as(pdf) name("Graph")
 
-coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white) title("N = 5, T=90')
-graph export '/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/thresh_5_90.pdf', as(pdf) name("Graph") replace
+*Appendix Figure 11*
+coefplot(SmallChange, label(Low Change))(YearofChangeL2, label(Two-Year Window))(YearsSinceLast, label(Years Since Change))(NumChanges, label(Change Frequency)), drop(_cons) xline(0)
+graph export "\\Client\H$\Dropbox (Personal)\TransformationEmpiricalModels\ReplicationsTransformationVar\NilssonSvensson2021\RepPlotsAndGraphs\TerminationCoefPlotExtUp.pdf", as(pdf) name("Graph")
+
+

@@ -44,16 +44,12 @@ nonstate.actorList <- unique(nonstate.actors$ActorId)
 ## armed conflict data (which is in conflict-year)
 ## & list conflicts and actors 
 ## Use that list to subset event data
-
-table(ucdp.acd$type_of_conflict)
-
 types <- c(1, 3, 4)
-
 acd.nonstate <- ucdp.acd[which(
   ucdp.acd$type_of_conflict %in% types),]
 
 substate.conflicts <- unique(acd.nonstate$conflict_id)
-length(substate.conflicts) ## 244
+
 
 ## First: violent events as part of existing substate conflicts:
 ucdp.subset <- ucdp.ged[which(
@@ -62,14 +58,9 @@ ucdp.subset <- ucdp.ged[which(
 ucdp.subset <- ucdp.subset[which(
   ucdp.subset$side_b_dset_id %in% nonstate.actorList),]
 
-dim(ucdp.subset) ## 191252
-summary(ucdp.subset$year)
 
 ## Frequency of events associated with actors:
 ## by year:
-
-colnames(ucdp.subset)
-
 actor.freq <- ucdp.subset %>% 
   dplyr::group_by(side_b, year, side_b_new_id) %>%
   summarize(year.events=n())

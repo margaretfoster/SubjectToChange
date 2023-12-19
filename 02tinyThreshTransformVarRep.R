@@ -304,33 +304,6 @@ for(g in unique(df.yearsum$groupID)){
 
 df.yearsum[which(df.yearsum$delta1==1), "counter"] <- 0
 
-## But: need to zero out the groups with no changes
-## and, for those with a change,
-## also from the start until the first delta change
-
-##%%%%%%%%%%%%%%%
-## Good idea to get a qualitative handle on some groups:
-
-##set.seed(31622)
-##sample(hadgap1, 5)
-
-##print(df.yearsum[which(df.yearsum$groupID==223),
-##                 c(cols[1:6], "counter")],n=24)
-
-##print(df.yearsum[which(df.yearsum$groupID==205),
-##                 c(cols[1:6], "counter")],n=24)
-
-##print(df.yearsum[which(df.yearsum$groupID==504),
-##                c(cols[1:6], "counter")],n=24)
-
-## MRTA, Peru, co-oped by drug traffickers in early 1990s
-#print(df.yearsum[which(df.yearsum$groupID==751),
-##                c(cols[1:6], "counter")],n=24)
-
-
-##print(df.yearsum[which(df.yearsum$groupID==211),
-##                c(cols[1:6], "counter")],n=24)
-
 
 save(df.yearsum, df.basedata, hadgap2, hadgap1.5,
      file=paste0(outPath,"02dfyearsumAndRelatedTinyUpdate.Rdata"))

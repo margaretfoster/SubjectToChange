@@ -521,4 +521,3 @@ df.yearsum9[which(df.yearsum9$delta1==1), "counter"] <- 0
 
 save(df.yearsum9, df.basedata9, hadgap2, hadgap1.5,
      file=paste0(outPath,"02dfyearsumAndRelatedTinyUpdate.Rdata"))
-)

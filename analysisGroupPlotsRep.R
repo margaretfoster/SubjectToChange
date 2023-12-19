@@ -54,8 +54,8 @@ print(subset[which(subset$groupID==209),
 print(subset[which(subset$groupID==488),], n=30) ## LRA
 print(subset[which(subset$groupID==497),], n=24) ## ONLF; 
 print(subset[which(subset$groupID==539),], n=24) ## AQIM framing as terrorism
-print(subset[which(subset$groupID==529),], n=24) ## MFC; framing as terroristic violence
-print(subset[which(subset$groupID==315),], n=24) ## UNLF; socialist separaist rebel group
+print(subset[which(subset$groupID==529),], n=24) ## MFC; framing as terrorist violence
+print(subset[which(subset$groupID==315),], n=24) ## UNLF; socialist separatist rebel group
 print(subset[which(subset$groupID==201),], n=24) ## KIO; Katrchin separatist group
 
 ## Some notes on the low change:
@@ -198,6 +198,9 @@ p.aqap2 <-ggplot(aqap.sub, aes(x=year, y=scaledvalue))+
 p.aqap2
 
 ggsave(p.aqap2,
+       width=12, 
+       height=8,
+       units=c("in"),
        file="annotedAQAPGraph.pdf")
 
 #############
@@ -351,6 +354,9 @@ p.as2 <-ggplot(as.data.frame(as.sub),
 p.as2
 
 ggsave(p.as2,
+       width=12, 
+       height=8,
+       units=c("in"),
        file="annotedAbuSayyaf.pdf")
 
 #############
@@ -484,6 +490,9 @@ p.ulfa2 <-ggplot(as.data.frame(ulfa.sub),
 p.ulfa2 
 
 ggsave(p.ulfa2,
+       width=12, 
+       height=8,
+       units=c("in"),
        file="annotedulfa.pdf")
 
 #### Before/after change
@@ -692,34 +701,7 @@ p.lra2 <-ggplot(as.data.frame(lra.sub),
 p.lra2
 
 ggsave(p.lra2,
+       width=12, 
+       height=8,
+       units=c("in"),
        file="annotedLRA.pdf")
-
-##############################
-## PKK
-#############################
-## Here making the PKK table because we
-## can expect that the PKK is going to be a hard case
-## in so much that they are a long-running and very complex
-## org. So we might be worried that K=2 oversimplfies
-
-## 18 conflict years:
-pkk.sub <- df.basedata[which(
-    df.basedata$side_b_dset_id==323),]
-pkk.sub.year <- df.yearsum[which(
-    df.yearsum$groupID == 323), ]
-
-pkk.sub.year$frexWords
-
-## FREX Words to overlay
-t1 <- unique(pkk.sub.year[which(
-    pkk.sub.year$propT1>.75),]$frexWords)
-
-t2 <- unique(pkk.sub.year[which(
-    pkk.sub.year$propT2>.75),]$frexWords)
-
-## GGPlot Script
-
-textanchor <- max(pkk.sub$year)-10
-num.articles <- dim(pkk.sub)[1]
-x.breaks <- min(unique(pkk.sub$year)):max(unique(pkk.sub$year))
-

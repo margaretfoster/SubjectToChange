@@ -1,6 +1,6 @@
-## Takes UCDP Data Frame
-## runs STM
-## returns STM object
+## Takes UCDP data frame
+## for one specific group
+## runs searchK, prints plot
 
 library(quanteda)
 library(stm)
@@ -8,7 +8,7 @@ library(dplyr)
 
 ## takes a ucdp data subset,
 ## runs a two--topic STM on the full articles
-article.analysis <- function(data){
+group.searchK <- function(data, groupID, kmax){
     set.seed(6889)
     
     print(dim(data))
@@ -37,7 +37,7 @@ article.analysis <- function(data){
                        "*voice*","audio", "dispatch",
                        "repor*", "track*", "media",
                        "ap", "*press*", "times",
-                       "france","pti","international", ## international might drop content, but probably mostly about international desks
+                       "france","pti","international", ## international might drop content, but mostly about desks
                        "cnn", "nbc", "pna",  ## PNA is philippines news agency
                        "hrw",
                        "network", "*sharq*", "watan", ## al-shariqyah; al-Sharq Al Aswat
@@ -46,7 +46,7 @@ article.analysis <- function(data){
                        "dagbladet", "summar*", ## summaries
                        "data*", ##database, datasheet
                        "programm*","post-dispatch",
-                       "all-india", "satp*",## satp = southeast asian terrorism portal
+                       "all-india", "satp",## satp = southeast asian terrorism portal
                        "meib", "mipt", "*diyar",
                        "london-based","trt", "irna",
                        "allafrica", "globe", "mail",
@@ -83,10 +83,10 @@ article.analysis <- function(data){
                              remove=c(stopwords("english"),
                                  news.agencies, markup,
                                  months, directions, languages),
-                             ##remove_numbers=TRUE,
-                             remove_punct=TRUE)
-                             ## min_nchar = 2, ## get rid of the one-letter words
-                             ##ngrams=1)
+                             remove_numbers=TRUE,
+                             remove_punct=TRUE,
+                             min_nchar = 2, ## get rid of the one-letter words
+                             ngrams=1)
     
     
     tmp.stm <- quanteda::convert(tmp.dfm,
@@ -111,36 +111,18 @@ article.analysis <- function(data){
 
         return(outlist=list(model=NULL, results=res))
     }
-    
-    tmp.stm <- stm(documents=tmp.docs,
-                   vocab=tmp.vocab,
-                   data=tmp.meta,
-                   seed=6889,
-                   verbose=FALSE, ## for replication log
-                   prevalence=~s(year), 
-                   K=2)
-        
-    results <- data.frame(
-        id = as.integer(names(tmp.docs)), 
-        maxtopic = as.integer(apply(tmp.stm$theta, 1, which.max)),
-        maxvalue =round(as.numeric(apply(tmp.stm$theta, 1, max)),2)
-        )
 
-    ## Max value gives intensity, but not polarity, so to get tractoin out of it, I need to rescale.
-    ## Scale: Topic 1 at -1; topic 2 at 1
+    kvect=c(2:kmax)
+    tmp.stm <- stm::searchK(documents=tmp.docs,
+                            vocab=tmp.vocab,
+                            data=tmp.meta,
+                            seed=6889,
+                            prevalence=~s(year), 
+                            K=kvect)
 
-    results$scaledvalue <- ifelse(results$maxtopic==1,
-                                  results$maxvalue*-1,
-                                  results$maxvalue)
-    
-    results$factor <- 0
-    results[which(results$maxtopic==1), "factor"] <- "T1"
-    results[which(results$maxtopic==2), "factor"] <- "T2"
+    pdf(file=paste0("searchKplotGroup", groupID,".pdf"))
+    plot(tmp.stm)
+    dev.off()
 
-    ##results[which(results$maxtopic==1), "frexWords"] <- as.character(topic1)[2]
-    ##results[which(results$maxtopic==2), "frexWords"] <- as.character(topic2)[2]
-
-    ##   print(head(results))
-   
-    return(outlist=list(model=tmp.stm, results=results))
+    print("check plot")
 }

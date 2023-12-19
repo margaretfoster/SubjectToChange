@@ -1,4 +1,4 @@
-rm(list=ls())
+##rm(list=ls())
 
 ## This script for a threshold of 10 events
 ## probably introducing noise at the 10-25 range
@@ -11,9 +11,10 @@ rm(list=ls())
 library(ggplot2)
 library(tidyverse)
 library(readxl)
+library(quanteda)
 
-
-source("./00articleModelingRep.R") ## 4/22: this is the version that replicates the findings. Original stopword list & quandeda cleaning
+source("./00articleModelingRep.R") ## 4/22: this is the version that replicates the findings.
+##Original stopword list & quandeda cleaning
 source("./00dominantFramingRep.R") ## wrapper to summarize yearly STM
 
 ##%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,8 +33,8 @@ ucdp.acd <- read.csv(paste0(dataPath, "ucdp-prio-acd-211.csv"))
 
 ucdp.actor <- read_excel(paste0(dataPath, "ucdp-actor-211.xlsx"))
 
-dim(ucdp.acd)  ##2506;
-dim(ucdp.ged) ## 261864 x 49
+##dim(ucdp.acd)  ##2506;
+##dim(ucdp.ged) ## 261864 x 49
 
 nonstate.actors <- ucdp.actor[which(ucdp.actor$Org==1),]
 nonstate.actorList <- unique(nonstate.actors$ActorId)
@@ -59,13 +60,13 @@ acd.nonstate <- ucdp.acd[which(
 
 dim(acd.nonstate) ## 2370 x 28 conflict-years
 
-table(acd.nonstate$type_of_conflict)
+#table(acd.nonstate$type_of_conflict)
       ## 117 extrasystemtic conflict-years;; 1864 intrastate conflict years;
       ##349 internationalized interstate conflict years
 
-length(unique(ucdp.acd$conflict_id)) ## 292 conflicts including state-state
-length(unique(acd.nonstate$conflict_id)) ## 244 conflicts that are state-nonstate
-length(unique(acd.nonstate$side_b_id)) ##593
+#length(unique(ucdp.acd$conflict_id)) ## 292 conflicts including state-state
+#length(unique(acd.nonstate$conflict_id)) ## 244 conflicts that are state-nonstate
+#length(unique(acd.nonstate$side_b_id)) ##593
  
 substate.conflicts <- unique(acd.nonstate$conflict_id)
 length(substate.conflicts) ## 244
@@ -77,18 +78,18 @@ ucdp.subset <- ucdp.ged[which(
 ucdp.subset <- ucdp.subset[which(
     ucdp.subset$side_b_dset_id %in% nonstate.actorList),]
 
-dim(ucdp.subset) ## 191252
-summary(ucdp.subset$year)
-length(unique(ucdp.subset$side_b_dset_id))
-length(unique(ucdp.subset$dyad_new_id))
+#dim(ucdp.subset) ## 191252
+#summary(ucdp.subset$year)
+#length(unique(ucdp.subset$side_b_dset_id))
+#length(unique(ucdp.subset$dyad_new_id))
 
 actor.freq <- as.data.frame(table(ucdp.subset$side_b))
 actor.freq <- actor.freq[order(actor.freq$Freq),]
 
-dim(actor.freq) ## 352x 2
+#dim(actor.freq) ## 352x 2
 
-tail(actor.freq) ## Syrian insurgents; Kashmir insurgents;
-print(actor.freq)
+#tail(actor.freq) ## Syrian insurgents; Kashmir insurgents;
+#print(actor.freq)
 
 dim(actor.freq[which(actor.freq$Freq > 10),]) 
 ## 258 with more than 10
@@ -131,9 +132,9 @@ for(u in uids){
    i=i+1 
 }
 
-grep(277, tiny.yearsum)
+#grep(277, tiny.yearsum)
 
-grep(326, tiny.yearsum)
+#grep(326, tiny.yearsum)
 
 as <- as.data.frame(tiny.yearsum[179])
 
