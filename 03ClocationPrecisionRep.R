@@ -307,9 +307,7 @@ mod2A<- plm(propdif.L1 ~ mean.loc.prec +
 
 summary(mod2A) 
 
-## SE Grouped just at group level:
-## b/c group-country-year is the unit of analysis
-## so it's weird to group at that:
+## SE Grouped the group level:
 
 mod2B<- plm(propdif.L1 ~ mean.loc.prec +
             mean.clarity + mean.time.prec +  MSF,
