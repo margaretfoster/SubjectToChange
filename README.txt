@@ -1,4 +1,3 @@
-Replication documents for Subject to Change (Foster 2023)
 
 Subject to Change takes event-level news articles from the UCDP GED and aggregates them for non-state actors. 
 
@@ -10,7 +9,7 @@ To use this repository:
 
 If you are interested in creating the change data, the workflow is contained in the replication_main.R script.
 
-replication_main.R (and the associated R Studio Project) lists the scripts and steps to completely replicate the documents.
+replication_main.R (and the associated R Studio Project) lists the scripts and steps to replicate the documents completely.
 
 If you are looking for the code that produces the tables and figures, then the code and replication logs are available in:
 
