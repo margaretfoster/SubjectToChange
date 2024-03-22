@@ -4,13 +4,38 @@
 
 rm(list=ls()) 
 
-library(renv)
+## Customize for your machine:
+setwd("~/Dropbox/TransformationEmpiricalModels/Replication/dataverse_files")
 
-renv::init() ## Version control;
+library("groundhog")
+
+packs <- c("ggplot2", "ggridges", "readxl", 
+           "stargazer", 'tidyverse',
+           "quanteda", "stm", "stringi", 
+           "ggrepel")
+
 ## The important version to be aware of is that
 ## quanteda had a major change between versions 3 and 4
 ## The results replicate with quanteda V3, which was how it was developed
 
+groundhog_day_deps <- "2023-11-21" ##
+groundhog.library(c("MASS", "Matrix", "RcppArmadillo", 
+                    "fastmatch", "RcppParallel","Rcpp",
+                    "SnowballC", "stopwords"),
+                  groundhog_day_deps,
+                  tolerate.R.version='4.3.3')
+
+groundhog_day <- "2024-02-01" ##
+groundhog.library(c("ggplot2", "ggridges", "readxl", "stargazer", 'tidyverse',
+                    "quanteda", "stm", "stringi", "ggrepel", "ggplot2",
+                    "ggridges", "countrycode", "sandwich", "lmtest", "plm",
+                    "broom", "corrplot", "haven"),
+                  groundhog_day,
+                  ignore.deps = c("MASS", "Matrix", "RcppArmadillo", 
+                                  "fastmatch", "RcppParallel",
+                                  "SnowballC", "stopwords", 
+                                  'Rcpp', 'ISOcodes'),
+                  tolerate.R.version='4.3.3')
 
 ## Part One: Data Processing
 source("./01measurementFullDataTinyThreshRep.R")
@@ -46,7 +71,8 @@ source("./analysisGroupPlotsRep.R")
 source("./03ClocationPrecisionRep.R")
 ## Takes:
 ## 02dfyearsumAndRelatedTinyUpdate.Rdata
-## MSFS-estimates_full-3x2000.csv #(data from Solis Waggoner)
+## MSFS-estimates_full-3x2000.csv
+#(data from Solis and Waggoner)
 
 ## Produces:
 ## Appendix Figures 10(1) and 10(2), lmAbsPropDifL1.pdf and negBinomMedia.pdf)
@@ -62,7 +88,6 @@ source("./04nsPrepTerminationRep.R")
 ## -  terminationplus.dta
 
 source("04nsPrepRecurrance.R")
-
 ## Replication (Stata)
 ## script: 05replication-Termination-analysis-ISQ.do
 ## script: 05Replication-Recurrence-analysis.do
@@ -93,7 +118,7 @@ source("06ThresholdPanelDescriptives.R")
 
 ## Appendix Section 5: Comparison of Topic Configurations
 
-## ONLF and PKK Searck K Plots
+## ONLF and PKK Searchk K Plots
 
 source("checkAlternateSpecTiny.R")
 ## calls: articleModelingAlt.R
@@ -102,7 +127,7 @@ source("checkAlternateSpecTiny.R")
 ## NB: Several hours of runtime
 
 
-## Appendix Figures PKK and AQAL Alternative K
+## Appendix Figures PKK and AQAP Alternative K
 source("implementAltPKKAQAP.R") 
 ## depends on: articleModelingAlt.R
 ## Takes: 
