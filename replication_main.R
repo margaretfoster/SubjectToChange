@@ -5,7 +5,7 @@
 rm(list=ls()) 
 
 ## Customize for your machine:
-setwd("~/Dropbox/TransformationEmpiricalModels/Replication/dataverse_files")
+setwd("~/Dropbox/TransformationEmpiricalModels/Replication/STC_Replication/")
 
 library("groundhog")
 

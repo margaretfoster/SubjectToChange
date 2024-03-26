@@ -164,7 +164,7 @@ df.precision[which(df.precision$country_id==345),
 ## Goddes and Cary (2021 and 2017) dataset on journalist murders
 ## They also us Freedom House Measures on media restrictions
 ## (Presumably in their replication data)
-## & V-Dem's  Freedom of Expression and Alternative Sources of Inf## ormation Index
+## & V-Dem's  Freedom of Expression and Alternative Sources of Information Index
 
 summary(df.basedata$year) ## 1989-2020
 
@@ -173,9 +173,7 @@ summary(df.basedata$year) ## 1989-2020
 ##           "analysis-data-fullsample.csv"))
 
 
-meddat <- read_csv(
-    paste0("../medrestrictionsdata/solis-waggoner/",
-           "MSFS-estimates_full-3x2000.csv"))
+meddat <- read_csv("./data/MSFS-estimates_full-3x2000.csv")
 
 
 ##fhdat <- read_excel(
