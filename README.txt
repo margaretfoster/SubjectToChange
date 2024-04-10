@@ -1,5 +1,5 @@
 
-Subject to Change takes event-level news articles from the UCDP GED and aggregates them for non-state actors. 
+Subject to Change takes event-level news articles from the UCDP GED and creates a group-year 
 
 It then runs a Structural Topic Model on the corpus of news snippets associated with each group. The output is aggregated at the group-year and produces an analysis of underlying trends. 
 
