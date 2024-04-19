@@ -1,5 +1,4 @@
 
-rm(list=ls())
 
 ## Script to replicate and extend
 ## Nilsson and Svensson 2021
@@ -8,11 +7,13 @@ rm(list=ls())
 ## Build the recurrence dataset with the new
 ## measure
 
-library(tidyverse)
-library(haven)
-library(dplyr)
 
-dataPath <- "./data/"
+rm(list=ls())
+groundhog_day <- "2024-02-01" ##
+groundhog.library(c("tidyverse", "haven", "dplyr"),
+                  groundhog_day)
+
+dataPath <- "./"
 
 ## Recurrence base data
 recurrence <- read_dta(paste0(dataPath,
@@ -22,11 +23,7 @@ recurrence <- read_dta(paste0(dataPath,
 termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))
 
-##changes <- load(paste0(dataPathChange,
-  ##                     "measurementScaleUpInProgressTiny.Rdata"))
-
-load(paste0("./output/",
-            "02dfyearsumAndRelatedTinyUpdate.Rdata"))
+load("./02dfyearsumAndRelatedTinyUpdate.Rdata")
 
 idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
 

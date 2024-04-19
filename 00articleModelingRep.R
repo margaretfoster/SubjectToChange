@@ -2,9 +2,9 @@
 ## runs STM
 ## returns STM object
 
-library(quanteda)
-library(stm)
-library(dplyr)
+##library(quanteda)
+##library(stm)
+##library(dplyr)
 
 ## takes a ucdp data subset,
 ## runs a two--topic STM on the full articles

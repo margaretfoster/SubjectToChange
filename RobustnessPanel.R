@@ -23,8 +23,8 @@ library(readxl)
 source("./00articleModelingRep.R") 
 source("./00dominantFramingRep.R") ## wrapper to summarize yearly STM
 
-dataPath <- "./data/"
-outPath <- "./output/"
+dataPath <- "./"
+outPath <- "./"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))
 
@@ -65,25 +65,26 @@ actor.freq <- ucdp.subset %>%
   dplyr::group_by(side_b, year, side_b_new_id) %>%
   summarize(year.events=n())
 
+
 ## FIRST adjust point:
 ## Keep only those groups with  >= N events for every year active
 ## Declare N:
-N = c(1, 5, 10)
+
+minNumEvents= c(1, 5, 10)
 
 ## Declare a threshold (Th) for number of years needed to be above N events
-
-Thresh = c(1, .9, .75)
+yearThresh = c(1, .9, .75)
 
 ## Loop through N, Th:
 
-for (n in N){  
-      for (t in Thresh){
+for (n in minNumEvents){  
+      for (t in yearThresh){
 
 ## declare threshold (Th):
 ## Th is % of group years above N.
 ## Default 1 (so all years above N articles)
 ## but can change
-  N= n
+  N = n
   Th=t
   
   print(paste0("N =", N))
@@ -118,14 +119,29 @@ print(paste0("number of groups is: ", length(uidsN)))
 yearsumN <- list()
 basedataN <- list()
 i=1
-  for(u in uidsN){
+ for(u in uidsN){
   print(paste0("iteration: ", i))
-  analysis<- dominantFraming(groupID= u,
-                             ucdpdata=gedN)
+    print(paste0("group ID is: ", u))
   
-  yearsumN[[i]] <- analysis$yearsum
-  basedataN[[i]] <- analysis$basedata
-  i=i+1 
+    ## get number of articles for each group:
+    numa = dim(gedN[which(gedN$side_b_new_id==u),])[1]
+    
+    if(numa>=10){ #process for or more articles
+      analysis<- dominantFraming(groupID= u,
+                             ucdpdata=gedN)
+
+      yearsumN[[i]] <- analysis$yearsum
+      basedataN[[i]] <- analysis$basedata
+      i=i+1
+      }
+    else{
+      print("fewer than 10 articles, pass")
+      sink(file='too_small.txt', append=TRUE)
+      print(paste0("passing on groupID: ", u))
+      sink()
+      i = i+1
+    }
+    
 }
 
 ## Uncomment if want to save along the way:
@@ -142,21 +158,22 @@ i=1
 ## From Script 2:
 
   df.basedataN <- do.call("rbind",basedataN)
+  
   df.yearsumN <- do.call("rbind",yearsumN) ## topic data
 
   df.yearsumN$modeledarticles <- df.yearsumN$countT1+
-    df.yearsumN$countT2
+    df.yearsumN$countT2 
 
-
-  freqMA <- as.data.frame(table(df.yearsumN$modeledarticles))
-  colnames(freqMA) <- c("numarticles", "Freq")
-  freqMA <- freqMA[order(freqMA$numarticles),]
+## Table of frequency of articles, according to thresholds
+## uncomment for diagnostics about how the data changes
+ # freqMA <- as.data.frame(table(df.yearsumN$modeledarticles))
+#  colnames(freqMA) <- c("numarticles", "Freq")
+#  freqMA <- freqMA[order(freqMA$numarticles),]
 
 ## Convert NAN and NA to 0.
 ## NAN are years with no articles. Don't want to drop them because that
 ## distorts the year structure of the data
 ## But equally need to skip over those zeros when I take the lag
-## Note that there are 67 of these years; so pretty rare
 
 df.yearsumN[which(is.nan(df.yearsumN$propT1)==TRUE|
                     is.na(df.yearsumN$propT1)==TRUE), "propT1"] <- 0
@@ -178,15 +195,19 @@ df.yearsumN[which(is.nan(df.yearsumN$frexWords)==TRUE|
 
 ##Reindex the lag to skip the rows with no modeled articles
 zeros <- df.yearsumN[which(df.yearsumN$modeledarticles==0),]
-zeros$propdif.L1 <- 0
-## placeholder for no change from previous year.
+zeros$propdif.L1 <- 0 ## placeholder for no change from previous year.
+
+## 4/11/24: make explicit call to the dplyr package for the lag
+## 
 
 df.yearsum2 <- df.yearsumN %>%
   group_by(groupID) %>%
   arrange(year, .by_group=TRUE) %>%
   filter(modeledarticles > 0) %>%
-  mutate(propdif.L1 = propdiff - lag(propdiff, n=1L)) %>%
-  mutate(propdif.L2 = propdiff - lag(propdiff, n=2L))
+  mutate(lag1 = dplyr::lag(propdiff, n=1L, order_by=c(groupID))) %>%
+  mutate(lag2 = dplyr::lag(propdiff, n=2L, order_by=c(groupID))) %>%
+ dplyr::mutate(propdif.L1 = propdiff - lag1) %>%
+ dplyr::mutate(propdif.L2 = propdiff - lag2)
 
 ## Reattach the 0 article years:
 
@@ -194,7 +215,7 @@ df.yearsumN <- rbind(df.yearsum2,
                      zeros)
 
 
-dim(df.yearsumN) ## 739 
+dim(df.yearsumN) 
 
 ## Convert NAN and NA to zero
 ## NAN are caused by years with no articles
@@ -202,9 +223,6 @@ dim(df.yearsumN) ## 739
 
 df.yearsumN[is.finite(df.yearsumN$propdif.L1)==FALSE,
             "propdif.L1"] <- 0
-
-## only 6 years without articles
-print(df.yearsumN[which(df.yearsumN$modeledarticles==0),]) 
 
 ###%%%%%%%%%%%%%%%%%%%%%%%
 ## Create Delta measure
@@ -219,14 +237,13 @@ print(df.yearsumN[which(df.yearsumN$modeledarticles==0),])
 df.yearsumN$delta1 <- 0 ## group-years with change over 1:
 df.yearsumN$delta1<- ifelse(abs(df.yearsumN$propdif.L1)>= 1, 1, 0)
 
-table(df.yearsumN$delta1) ## 343 years of change in entire data; 94 in this version
-
-round(prop.table(table(df.yearsumN$delta1)), 2) ## 84% no; 16% yes in base data
+#table(df.yearsumN$delta1) ## 343 years of change in entire data; 94 in this version
+#round(prop.table(table(df.yearsumN$delta1)), 2) ## 84% no; 16% yes in base data
 ## 87% no, 13% yes in this data
 
 hadgap1 <- unique(df.yearsumN[df.yearsumN$delta1==1,]$groupID)
 
-length(hadgap1)/length(unique(df.yearsumN$groupID)) ## 37% had change in this data
+## length(hadgap1)/length(unique(df.yearsumN$groupID)) ## 37% had change in this data
 
 ## group-years with a lag-to-now change 1.5 or larger:
 df.yearsumN$delta1.5 <- 0
@@ -264,15 +281,15 @@ df.yearsumN$delta1_L2 <- 0 ## group-years with a change of at least |1| over
 df.yearsumN[which(abs(df.yearsumN$propdif.L2)>= 1 |
                     abs(df.yearsumN$propdif.L1) >=1), "delta1_L2"] <- 1
 
-table(df.yearsumN$delta1_L2) ## 554 years with the two-year window of change
-round(prop.table(table(df.yearsumN$delta1_L2)),2)
+#table(df.yearsumN$delta1_L2) ## 554 years with the two-year window of change
+#round(prop.table(table(df.yearsumN$delta1_L2)),2)
 
 hadgap1.l2 <- unique(df.yearsumN[df.yearsumN$delta1_L2==1,]$groupID) ## 172 groups
 
-length(hadgap1.l2)
-length(unique(df.yearsumN$groupID))
+#length(hadgap1.l2)
+#length(unique(df.yearsumN$groupID))
 
-setdiff(hadgap1.l2, hadgap1) 
+#setdiff(hadgap1.l2, hadgap1) 
 
 ## group-years with a lag-to-now change 1.5 or larger:
 
@@ -282,9 +299,9 @@ df.yearsumN[which(abs(df.yearsumN$propdif.L2)>= 1.5 |
                     abs(df.yearsumN$propdif.L1) >=1.5),
             "delta15_L2"] <- 1
 
-table(df.yearsumN$delta15_L2) ## 317 group-years; 
+#table(df.yearsumN$delta15_L2) ## 317 group-years; 
 
-length(unique(df.yearsumN[which(df.yearsumN$delta15_L2==1),]$groupID)) ## 120 unque groups
+#length(unique(df.yearsumN[which(df.yearsumN$delta15_L2==1),]$groupID)) ## 120 unque groups
 
 ## list of groups with a 1.5 gap:
 hadgap15L2 <- unique(df.yearsumN[df.yearsumN$delta15_L2==1,]$groupID)
@@ -297,11 +314,11 @@ df.yearsumN[which(abs(df.yearsumN$propdif.L2)>= 2 |
                     abs(df.yearsumN$propdif.L1) >=2), "delta2_L2"] <- 1
 
 
-table(df.yearsumN$delta2_L2) ##196 years in 68 different groups
+#table(df.yearsumN$delta2_L2) ##196 years in 68 different groups
 
 length(unique(df.yearsumN[which(df.yearsumN$delta2_L2==1),]$groupID)) ##80
 
-hadgap2L2 <- unique(df.yearsumN[df.yearsumN$delta2_L2==1,]$groupID)
+#hadgap2L2 <- unique(df.yearsumN[df.yearsumN$delta2_L2==1,]$groupID)
 
 
 ##############################
@@ -326,7 +343,7 @@ df.yearsumN$gap25 <- 0
 df.yearsumN[which(abs(df.yearsumN$propdiff) <= .25 &
                     df.yearsumN$modeledarticles >0), "gap25"] <- 1
 
-table(df.yearsumN$gap25) ## 10 event threshold: 1882  no, 231  yes
+#table(df.yearsumN$gap25) ## 10 event threshold: 1882  no, 231  yes
 
 length(unique(df.yearsumN[which(df.yearsumN$gap25==1),]$groupID))
 ## 140 group-years between the topics is less than .25
@@ -340,7 +357,7 @@ df.yearsumN[which(abs(df.yearsumN$propdiff) <= .5 &
 ## gap between the topics is less than .5
 table(df.yearsumN$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
 
-length(unique(df.yearsumN[which(df.yearsumN$gap50==1),]$groupID))
+#length(unique(df.yearsumN[which(df.yearsumN$gap50==1),]$groupID))
 
 ##%%%%%%%%%%%%%%%%%%%%%%%%%
 ## Per-group count
@@ -404,16 +421,14 @@ df.basedataN$Th <- Th
 print("Part 2 finished, data saved")
 
 ## Prep for termination rep:
-
-  dataPath <- "./data/"
-  termination <- read_dta(paste0(dataPath,
+dataPath <- "./"
+termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))
 
-  idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
+idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
 
 
-  t.groups.after1989 <- unique(termination[which(
-  termination$year>=1989),]$sidebid)
+t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid)
 
   c.groups <- unique(df.yearsumN$groupID)
 
@@ -644,5 +659,5 @@ print("Part 2 finished, data saved")
 print(paste0("Finished for Th= ", Th))
 print(paste0("Finished for N= ", N))
 
-}
-}
+} #closes for t in thresh
+} #closes for n in min num articles

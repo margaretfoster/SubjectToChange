@@ -5,12 +5,19 @@ rm(list=ls())
 ## for groups across time
 ## using the source_original underlying article(s)
 
-library(ggplot2)
-library(tidyverse)
-library(stargazer)
-library(dplyr)
 
-outPath <- "./output/"
+groundhog_day <- "2024-02-01" ##
+groundhog.library(c("ggplot2", 'tidyverse', 'stargazer', 'dplyr'),
+                  groundhog_day,
+                  ignore.deps = c("MASS", "Matrix", "RcppArmadillo", 
+                                  "fastmatch", "RcppParallel",
+                                  "SnowballC", "stopwords", 
+                                  'Rcpp', 'ISOcodes'),
+                  tolerate.R.version='4.3.3')
+
+
+
+outPath <- "./"
 
 load(file=paste0(outPath,
          "01measurementScaleUpInProgressTiny55.Rdata"))
@@ -40,26 +47,26 @@ df.yearsum$modeledarticles <- df.yearsum$countT1+
 summary(df.yearsum$modeledarticles) ## 0-17735; median: 8; mean = 83
 
 ## Right tail:
-print(df.yearsum[which(df.yearsum$modeledarticles>1500),], n=23)
-## With one exception, thes are all very recent articles (after 2011)
+#print(df.yearsum[which(df.yearsum$modeledarticles>1500),], n=23)
+## With one exception, these are all very recent articles (after 2011)
 ## and seem to be Taliban (actor 303), Syrian insurgents (4456),
 ## IS (actor 234). The exception is the Serbian Republic of Bosnia-Herzogovina (actor 339) in 1992.
 
-## Left tail:
-print(df.yearsum[which(df.yearsum$modeledarticles==0),], n=53) 
+## Left tail: groups with no articles
+#print(df.yearsum[which(df.yearsum$modeledarticles==0),], n=53) 
 
-## 53. Removing these from the data, because there isn't any post-modeling
+## Removing these from the data, because there isn't any post-modeling
 ## analysis that can be done in this set
 
 
 ## What do the 0 article years do to my lag variables:
 ## (A: introduce NAN values)
 
-print(df.yearsum[which(df.yearsum$groupID==223),],n=24)## for this group the no
+# print(df.yearsum[which(df.yearsum$groupID==223),],n=24)## for this group the no
 ## modeled article years are a cluster in the center of a set of years with
 ## only one article; ads one NAN year of propdif.L1 at the end of the streak
 
-print(df.yearsum[which(df.yearsum$groupID==169),],n=32)##
+#print(df.yearsum[which(df.yearsum$groupID==169),],n=32)##
 
 ## Convert NAN and NA to 0.
 ## NAN are years with no articles. Don't want to drop them because that
@@ -82,21 +89,24 @@ df.yearsum[which(is.nan(df.yearsum$frexWords)==TRUE|
                  is.na(df.yearsum$frexWords)==TRUE), "frexWords"] <- "None"## No NAN or NA in prop difference
 
 
-df.yearsum[which(df.yearsum$modeledarticles==0),]
+#df.yearsum[which(df.yearsum$modeledarticles==0),]
 
-summary(df.yearsum$modeledarticles) ##0-17,735
+summary(df.yearsum$modeledarticles) ##0-17,735 ## now no NA; previous had 10 concentrated in groups 363, 805
  
+summary(df.yearsum$propdiff) ##-1 to 1, median -0.34
+
 ##Reindex the lag to skip the rows with no modeled articles
 
 zeros <- df.yearsum[which(df.yearsum$modeledarticles==0),]
+
 zeros$propdif.L1 <- 0 ## placeholder for no change from previous year.
 
 df.yearsum2 <- df.yearsum %>%
     group_by(groupID) %>%
     arrange(year, .by_group=TRUE) %>%
     filter(modeledarticles > 0) %>%
-    mutate(propdif.L1 = propdiff - lag(propdiff, n=1L)) %>%
-    mutate(propdif.L2 = propdiff - lag(propdiff, n=2L))
+   dplyr::mutate(propdif.L1 = propdiff - dplyr::lag(propdiff, n=1L)) %>%
+    dplyr::mutate(propdif.L2 = propdiff - dplyr::lag(propdiff, n=2L))
 
 ## Reattach the 0 article years:
 
@@ -104,16 +114,12 @@ df.yearsum <- rbind(df.yearsum2,
                     zeros)
 
 
-dim(df.yearsum)
-
 ## Convert NAN and NA to zero
 ## NAN are caused by years with no articles
 ## NA ae usually first years in the data
 
 df.yearsum[is.finite(df.yearsum$propdif.L1)==FALSE,
            "propdif.L1"] <- 0
-
-print(df.yearsum[which(df.yearsum$modeledarticles==0),], n=100)
 
 ###%%%%%%%%%%%%%%%%%%%%%%%
 ## Create Delta measure
@@ -123,9 +129,10 @@ print(df.yearsum[which(df.yearsum$modeledarticles==0),], n=100)
 ## (b) Between |1| and |1.5|
 ## (c) between |1.5| and |2|
 ## (d) equal to |2|
-
+## Generate summary statistics
 
 df.yearsum$delta1 <- 0 ## group-years with change over 1:
+
 df.yearsum$delta1<- ifelse(abs(df.yearsum$propdif.L1)>= 1, 1, 0)
 
 table(df.yearsum$delta1) ## 343 years of change
@@ -134,7 +141,7 @@ round(prop.table(table(df.yearsum$delta1)), 2) ## 84% no; 16% yes
 
 hadgap1 <- unique(df.yearsum[df.yearsum$delta1==1,]$groupID) ## 157
 
-length(hadgap1)/length(unique(df.yearsum$groupID))
+length(hadgap1)/length(unique(df.yearsum$groupID)) #0.6
 
 ## group-years with a lag-to-now change 1.5 or larger:
 df.yearsum$delta1.5 <- 0
@@ -142,7 +149,7 @@ df.yearsum$delta1.5<- ifelse(abs(df.yearsum$propdif.L1) >= 1.5,
                            1, 0)
 
 table(df.yearsum$delta1.5) ## 181 group-years; 
-length(unique(df.yearsum[which(df.yearsum$delta1.5==1),]$groupID)) ## 102 unque groups
+length(unique(df.yearsum[which(df.yearsum$delta1.5==1),]$groupID)) ## 102 unique groups
 
 ## list of groups with a 1.5 gap:
 hadgap1.5 <- unique(df.yearsum[df.yearsum$delta1.5==1,]$groupID)
@@ -154,7 +161,6 @@ df.yearsum$delta2<- ifelse(abs(df.yearsum$propdif.L1) == 2,
                            1, 0)
 
 table(df.yearsum$delta2) ##118 years in 68 different groups
-## (versus 38 years in 33 different groups)
 
 length(unique(df.yearsum[which(df.yearsum$delta2==1),]$groupID))
 
@@ -172,17 +178,14 @@ df.yearsum[which(abs(df.yearsum$propdif.L2)>= 1 |
                  abs(df.yearsum$propdif.L1) >=1), "delta1_L2"] <- 1
 
 table(df.yearsum$delta1_L2) ## 554 years with the two-year window of change
-round(prop.table(table(df.yearsum$delta1_L2)),2)
+round(prop.table(table(df.yearsum$delta1_L2)),2) ## 0.25 of the total groups 
 
-hadgap1.l2 <- unique(df.yearsum[df.yearsum$delta1_L2==1,]$groupID) ## 172 groups
+hadgap1.l2 <- unique(df.yearsum[df.yearsum$delta1_L2==1,]$groupID)
 
-length(hadgap1.l2)
-length(unique(df.yearsum$groupID))
-
-setdiff(hadgap1.l2, hadgap1) 
+length(hadgap1.l2) ## 172 groups 
+## setdiff(hadgap1.l2, hadgap1) ## 260 groups with a gap of 1 but not 2
 
 ## group-years with a lag-to-now change 1.5 or larger:
-
 df.yearsum$delta15_L2 <- 0
 
 df.yearsum[which(abs(df.yearsum$propdif.L2)>= 1.5 |
@@ -191,7 +194,7 @@ df.yearsum[which(abs(df.yearsum$propdif.L2)>= 1.5 |
 
 table(df.yearsum$delta15_L2) ## 317 group-years; 
 
-length(unique(df.yearsum[which(df.yearsum$delta15_L2==1),]$groupID)) ## 120 unque groups
+length(unique(df.yearsum[which(df.yearsum$delta15_L2==1),]$groupID)) ## 120 unique groups
 
 ## list of groups with a 1.5 gap:
 hadgap15L2 <- unique(df.yearsum[df.yearsum$delta15_L2==1,]$groupID)
@@ -206,9 +209,9 @@ df.yearsum[which(abs(df.yearsum$propdif.L2)>= 2 |
 
 table(df.yearsum$delta2_L2) ##196 years in 68 different groups
 
-length(unique(df.yearsum[which(df.yearsum$delta2_L2==1),]$groupID)) ##80
+#length(unique(df.yearsum[which(df.yearsum$delta2_L2==1),]$groupID)) ##80
 
-hadgap2L2 <- unique(df.yearsum[df.yearsum$delta2_L2==1,]$groupID)
+#hadgap2L2 <- unique(df.yearsum[df.yearsum$delta2_L2==1,]$groupID)
 
 
 ##############################
@@ -245,9 +248,9 @@ df.yearsum[which(abs(df.yearsum$propdiff) <= .5 &
 
 
 ## gap between the topics is less than .5
-table(df.yearsum$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
+#table(df.yearsum$gap50)## 10 threshold: 1664  no, 448 yes 
 
-length(unique(df.yearsum[which(df.yearsum$gap50==1),]$groupID))
+#length(unique(df.yearsum[which(df.yearsum$gap50==1),]$groupID)) ## in 176 groups
 
 ##%%%%%%%%%%%%%%%%%%%%%%%%%
 ## Per-group count
@@ -264,8 +267,8 @@ cols <-  c("year",
 ## because the shifts in framing are complete over two years
 ## but just barely under the |1| framing
 ## 223: NSCN-IM (Naga Insurgent Group)
-print(df.yearsum[which(df.yearsum$groupID==223),
-                 cols ],n=24)
+#print(df.yearsum[which(df.yearsum$groupID==223),
+#                 cols ],n=24)
 
 ## Nested loops to iterate through the list of groups
 ## and create a counter:
@@ -274,7 +277,8 @@ print(df.yearsum[which(df.yearsum$groupID==223),
 ## plus 1 for every year until the next change 
 ## [Not efficient, but more interpretable]
 
-df.yearsum$yearsSinceChange <- NA
+#df.yearsum$yearsSinceChange <- NA
+
 df.yearsum$counter <- NA
 for(g in unique(df.yearsum$groupID)){
     print(g)
@@ -304,6 +308,8 @@ for(g in unique(df.yearsum$groupID)){
 
 df.yearsum[which(df.yearsum$delta1==1), "counter"] <- 0
 
+#table(df.yearsum$delta1)
+#table(df.yearsum$counter)
 
 save(df.yearsum, df.basedata, hadgap2, hadgap1.5,
      file=paste0(outPath,"02dfyearsumAndRelatedTinyUpdate.Rdata"))

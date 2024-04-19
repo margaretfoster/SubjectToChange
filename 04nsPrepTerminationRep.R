@@ -4,17 +4,16 @@
 
 rm(list=ls())
 
-library(tidyverse)
-library(haven)
-library(dplyr)
+groundhog_day <- "2024-02-01" ##
+groundhog.library(c("tidyverse", "haven", "dplyr"),
+                  groundhog_day)
 
-dataPath <- "./data/"
+dataPath <- "./"
 
 termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))
 
-changes <- load(paste0("./output/",
-                       "02dfyearsumAndRelatedTinyUpdate.Rdata"))
+changes <- load("./02dfyearsumAndRelatedTinyUpdate.Rdata")
 
 idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
 
@@ -47,11 +46,14 @@ termination <- merge(termination,
                      by.y=("old_id"),
                      all.x=TRUE)
 
-dim(termination)
-
-colnames(termination)
-
 ids.yearsum <- unique(df.yearsum$groupID)
+
+## Ensure types are consistent:
+termination$new_id <- as.numeric(termination$new_id)
+termination$year <- as.numeric(termination$year)
+df.yearsum$year <-  as.numeric(df.yearsum$year)
+df.yearsum$groupID <- as.numeric(df.yearsum$groupID)  
+  
 terminationplus1 <- merge(x=termination,
                          y=df.yearsum,
                          by.x=c("new_id", "year"),
@@ -67,28 +69,30 @@ terminationplus <- terminationplus1[which(
 
 dim(terminationplus) ## 1229 x 80
 
-colnames(terminationplus)
+colnames(terminationplus) 
+table(terminationplus$delta1) ## 126 yes
 
 ## summarizing the deltas that I introduced
 ## (with an eye for the number of NAs:)
 summary(terminationplus$delta1.5) ## 111 NAs
 
 ## so what groups and dyads are NA in the post 1989 subset:
-terminationplus1 <- terminationplus[is.na(
-    terminationplus$propdiff),] ## 295
-terminationplus2 <- terminationplus[is.na(
-    terminationplus$delta1.5),] ## 404
+#terminationplus1 <- terminationplus[is.na(
+#    terminationplus$propdiff),] ## 295
 
-unique(terminationplus1$sideb) 
+#terminationplus2 <- terminationplus[is.na(
+#    terminationplus$delta1.5),] ## 404
+
+#unique(terminationplus1$sideb) 
 
 ## Identify the armed groups that had a change of
 ## 1, 1.5 and greater than 2:
 
 haddelta1 <- unique(terminationplus[which(
-    terminationplus$delta1==1),]$new_id)
+    terminationplus$delta1==1),]$new_id) 
 
 haddelta1.5 <- unique(terminationplus[which(
-    terminationplus$delta1.5==1),]$new_id)
+    terminationplus$delta1.5==1),]$new_id) 
 
 haddelta2 <- unique(terminationplus[which(
     terminationplus$delta2==1),]$new_id)
@@ -113,29 +117,34 @@ terminationplus$haddelta2 <- ifelse(terminationplus$new_id
                                     %in% haddelta2, 1, 0)
 
 
+## Create a new mini-dataframe 
+## to count frequency of changes
+## create some summary statistics
+## and then merge back in
+
 numchanges<- terminationplus %>%
     group_by(new_id) %>%
     summarise(numchanges=sum(delta1==1))
 
 summary(numchanges$numchanges) ## 0-4 (78 NA)
 
-hist(numchanges$numchanges)
 
-p <- ggplot(numchanges,
-            aes(x=numchanges)) +
-    geom_histogram() +
-    xlab("Number of Frame Change Years") +
-    ylab("Count")+
-    ggtitle("Summary of Number of Changes Variable")+
-    theme_bw()
+## Summary plot if desired
+#p <- ggplot(numchanges,
+#            aes(x=numchanges)) +
+#    geom_histogram() +
+#    xlab("Number of Frame Change Years") +
+#    ylab("Count")+
+##    ggtitle("Summary of Number of Changes Variable")+
+#    theme_bw()
 
-p
+#p
 
 ## Outlier identification:
-numchanges[which(numchanges$numchanges==4),]##2
-numchanges[which(numchanges$numchanges==3),] ## 8
+#numchanges[which(numchanges$numchanges==4),]##2
+#numchanges[which(numchanges$numchanges==3),] ## 8
 
-numchanges[which(numchanges$numchanges==2),] ##19
+#numchanges[which(numchanges$numchanges==2),] ##19
 
 
 ## 4 changes:
@@ -166,37 +175,21 @@ dim(ysC) ##213 x 2
 head(ysC) ## groups with a longest time after change:
 ## 326 (16 years); 338 (14 years); 551 (12 years); 169 (11 years); 325 (11 years)
 
-## Some qualitative perspective, if desired:
-terminationplus[which(terminationplus$new_id==326),
-                c(cols, "counter", "delta1")]## UFLA
-
-terminationplus[which(terminationplus$new_id==338),
-                cols]## Republic of Nagorno-Karabakh
-
-terminationplus[which(terminationplus$new_id==551),
-                cols]## OLF
-
-terminationplus[which(terminationplus$new_id==169),
-                cols]## CPP
-
-terminationplus[which(terminationplus$new_id==325),
-                cols]## "Kashmir insurgents"
-
-
 ##%%%%%%%%%%%%%%%%%
 ## Summary statistics
 ## For change and also for the introduced variables
 ##%%%%%%%%%%%%%%%%%%
 
 ## The unit for these is dyad-year:
-table(terminationplus$haddelta1) ## 1397 no; 526 dyad-years
-table(terminationplus$haddelta1.5) ## 1647 no; 276 dyad-years
-table(terminationplus$haddelta2) ## 1775 no; 148 dyad-years
+table(terminationplus$haddelta1) ## 579 no; 650 yes dyad-years
+table(terminationplus$haddelta1.5) ## 823 no; 406 yes dyad-years
+table(terminationplus$haddelta2) ## 1028 no; 201 yes dyad-years
 
 ### Termination X Islamist
-round(prop.table(table(terminationplus$haddelta1)),2) ## 35% of the dyad-years have a delta of 1
+round(prop.table(table(terminationplus$haddelta1)),2) ## 53% of the dyad-years have a delta of 1; 47% do not have any
 
-round(prop.table(table(terminationplus$haddelta1, terminationplus$islamist)), 2) ## Interestingly, the "change" groups are underrepresented among the groups coded as Islamist
+round(prop.table(table(terminationplus$haddelta1, 
+                       terminationplus$islamist)), 2) ## Interestingly, the "change" groups are underrepresented among the groups coded as Islamist
 
 ## number of changes
 ## Count variable
@@ -219,14 +212,15 @@ df <- as.data.frame(cbind(binaries,
                                 table(terminationplus$haddelta1.5),
                                 table(terminationplus$haddelta2))))
 
-## Figure 3 in text:
+## Figure 2 in text:
 colnames(df) <- c("Variable", "No", "Yes")
 stargazer(df, summary=FALSE, rownames=FALSE)
 
 
+## Figure A12 4 in text:
+
 sum.df <- terminationplus[,c("numchanges","counter")]
 
-## Figure A12 4 in text:
 stargazer(sum.df,
           covariate.labels =c("Number of Changes",
               "Years Since Change"

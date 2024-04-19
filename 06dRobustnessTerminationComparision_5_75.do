@@ -1,12 +1,3 @@
-****************************************************************************************************
-		
-* Replication file 3 for:
-* Foster, "Subject to Change: Quantifying Transformation in Armed Conflict Actors"
-* This file compares inclusion criteria for minimum numbers of articles per group/year
-* Includes a replication of
-* 'The Intractability of Islamist Insurgencies: Islamist Rebels and the Recurrence of Civil War"
-* Desiree Nilsson & Isak Svensson, International Studies Quarterly
-***************************************************************************************************/
 
 clear all
 
@@ -28,16 +19,11 @@ ssc install outreg2
 * Coefplot
 ssc install  coefplot  
 
-****************************************************************************************************
-
-* set working directory:
-* MJF: Set to Replication directory; I'm using my own throughout
-
-cd "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication"
+**********************************************************
 
 * load data:
 * Threshold:
-use "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/data/terminationplus_5_75.dta"
+use "./data/terminationplus_5_75.dta"
 
 sort dyadid year
 
@@ -177,4 +163,4 @@ set scheme lean2
 
 ** Appendix Threshold COmparison ** 
 coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white) title("N = 5, T=75")
-graph export '/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/thresh_5_75.pdf' as(pdf) name("Graph") replace
+graph export thresh_5_75.pdf, as(pdf) replace

@@ -9,10 +9,7 @@ library(tidyverse)
 library(stargazer)
 library(ggrepel)
 
-load(file="./output/02dfyearsumAndRelatedTinyUpdate.Rdata")
-
-## Exploratory:
-length(unique(df.yearsum$groupID))
+load(file="./02dfyearsumAndRelatedTinyUpdate.Rdata")
 
 ##Which groups had a delta of at least |1|:
 haddelta1 <- df.yearsum[which(
@@ -33,30 +30,30 @@ length(groups.nochange) ## 104
 subset <- df.yearsum[which(
     df.yearsum$groupID %in% groups.nochange),]
 
-dim(subset) ## 543 x 16
 
 ## filter by length of operation:
 
 subset.freqs <- as.data.frame(table(subset$groupID))
 subset.freqs <- subset.freqs[order(subset.freqs$Freq),]
-## Qualitative ontes: longest operating group without "change"
+
+## Qualitative notes: longest operating group without "change"
 ## is 209= Hamas ;then 488 = LRA; 
 ##397 = ONLF (Ethiopian liberation front), 
 ##539: AQIM, 
 ##529 = MFDC, secessionist rebel group in Senegal
 
 ## what is the Hamas framing:
-print(subset[which(subset$groupID==209),], n=32)
-print(subset[which(subset$groupID==209),
-             c("year", "frexWords")], n=32)
+#print(subset[which(subset$groupID==209),], n=32)
+#print(subset[which(subset$groupID==209),
+#             c("year", "frexWords")], n=32)
 
 ## Other higher-activity; low change groups:
-print(subset[which(subset$groupID==488),], n=30) ## LRA
-print(subset[which(subset$groupID==497),], n=24) ## ONLF; 
-print(subset[which(subset$groupID==539),], n=24) ## AQIM framing as terrorism
-print(subset[which(subset$groupID==529),], n=24) ## MFC; framing as terrorist violence
-print(subset[which(subset$groupID==315),], n=24) ## UNLF; socialist separatist rebel group
-print(subset[which(subset$groupID==201),], n=24) ## KIO; Katrchin separatist group
+#print(subset[which(subset$groupID==488),], n=30) ## LRA
+#print(subset[which(subset$groupID==497),], n=24) ## ONLF; 
+#print(subset[which(subset$groupID==539),], n=24) ## AQIM framing as terrorism
+##print(subset[which(subset$groupID==529),], n=24) ## MFC; framing as terrorist violence
+##print(subset[which(subset$groupID==315),], n=24) ## UNLF; socialist separatist rebel group
+#print(subset[which(subset$groupID==201),], n=24) ## KIO; Katrchin separatist group
 
 ## Some notes on the low change:
 ## LRA has a couple in the second topic;
@@ -71,13 +68,8 @@ print(subset[which(subset$groupID==201),], n=24) ## KIO; Katrchin separatist gro
 aqap.sub <- df.basedata[which(
     df.basedata$side_b_dset_id==881),]
 
-dim(aqap.sub) ## 916 x 53
-
 aqap.sub.year <- df.yearsum[which(
     df.yearsum$groupID == 881), ]
-
-head(aqap.sub)
-head(aqap.sub.year)
 
 ## This graph has a big change in AQAP activities after 2015;
 ## Interestingly, so does UCPD's writeup: formerly the dyads were mostly AQAP-Ansaraullah
@@ -98,11 +90,10 @@ x.breaks <- min(unique(aqap.sub$year)):max(unique(aqap.sub$year))
 
 ## highlight examples of stories before and after:
 
-dim(aqap.sub) ## 916 x 54
-
 colnames(aqap.sub) ## want:
 cols <- c("id", "source_article",
           "year", "maxtopic","scaledvalue")
+
 ## want to highlight on both sides of the 2015 switch:
 
 aqap.sub[which(aqap.sub$year==2015), cols]

@@ -2,12 +2,10 @@
 
 library(haven)
 
-setwd("~/Dropbox/TransformationEmpiricalModels/Replication/STC_Replication/")
-
 ## Load the data that we generated and 
-N1T1 <- read_dta("./data/terminationplus_1_1.dta") ## dataframe with at least one doc every year
+N1T1 <- read_dta("./terminationplus_1_1.dta") ## dataframe with at least one doc every year
 
-N10T1 <- read_dta("./data/terminationplus_10_1.dta") ## dataframe with at least one doc every year
+N10T1 <- read_dta("./terminationplus_10_1.dta") ## dataframe with at least one doc every year
 
 colnames(N10T1)
 

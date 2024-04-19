@@ -5,14 +5,9 @@
 rm(list=ls()) 
 
 ## Customize for your machine:
-setwd("~/Dropbox/TransformationEmpiricalModels/Replication/STC_Replication/")
+setwd("~/Dropbox/TransformationEmpiricalModels/Replication/dataverse_files_2/")
 
 library("groundhog")
-
-packs <- c("ggplot2", "ggridges", "readxl", 
-           "stargazer", 'tidyverse',
-           "quanteda", "stm", "stringi", 
-           "ggrepel")
 
 ## The important version to be aware of is that
 ## quanteda had a major change between versions 3 and 4
@@ -29,7 +24,7 @@ groundhog_day <- "2024-02-01" ##
 groundhog.library(c("ggplot2", "ggridges", "readxl", "stargazer", 'tidyverse',
                     "quanteda", "stm", "stringi", "ggrepel", "ggplot2",
                     "ggridges", "countrycode", "sandwich", "lmtest", "plm",
-                    "broom", "corrplot", "haven"),
+                    "broom", "corrplot", "haven", 'pscl', "broom"),
                   groundhog_day,
                   ignore.deps = c("MASS", "Matrix", "RcppArmadillo", 
                                   "fastmatch", "RcppParallel",
@@ -88,9 +83,6 @@ source("./04nsPrepTerminationRep.R")
 ## -  terminationplus.dta
 
 source("04nsPrepRecurrance.R")
-## Replication (Stata)
-## script: 05replication-Termination-analysis-ISQ.do
-## script: 05Replication-Recurrence-analysis.do
 
 ## Is the relationship between change and termination
 ## due to a few groups with sparse articles?
@@ -105,21 +97,9 @@ source("RobustnessPanel.R")
 ## A few descriptive figures: 
 source("06ThresholdPanelDescriptives.R")
 
-## Analysis (via Stata because of the replication)
-## 06dRobustnessTerminationComparision_1_75.do
-## 06dRobustnessTerminationComparision_1_9.do
-## 06dRobustnessTerminationComparision_1_1.do
-## 06dRobustnessTerminationComparision_5_75.do
-## 06dRobustnessTerminationComparision_5_9.do
-## 06dRobustnessTerminationComparision_5_1.do
-## 06dRobustnessTerminationComparision_10_75.do
-## 06dRobustnessTerminationComparision_10_9.do
-## 06dRobustnessTerminationComparision_10_1.do
-
 ## Appendix Section 5: Comparison of Topic Configurations
 
 ## ONLF and PKK Searchk K Plots
-
 source("checkAlternateSpecTiny.R")
 ## calls: articleModelingAlt.R
 ## Takes the base data, runs STM's searchK() 
@@ -131,3 +111,21 @@ source("checkAlternateSpecTiny.R")
 source("implementAltPKKAQAP.R") 
 ## depends on: articleModelingAlt.R
 ## Takes: 
+
+
+## Analysis (via Stata because of the replication)
+## Replication (Stata)
+## STC_STATA_Rep_All.do  
+## Is a wrapper that runs:
+## script: 05replication-Termination-analysis-ISQ.do
+## script: 05Replication-Recurrence-analysis.do
+## 06dRobustnessTerminationComparision_1_75.do
+## 06dRobustnessTerminationComparision_1_9.do
+## 06dRobustnessTerminationComparision_1_1.do
+## 06dRobustnessTerminationComparision_5_75.do
+## 06dRobustnessTerminationComparision_5_9.do
+## 06dRobustnessTerminationComparision_5_1.do
+## 06dRobustnessTerminationComparision_10_75.do
+## 06dRobustnessTerminationComparision_10_9.do
+## 06dRobustnessTerminationComparision_10_1.do
+

@@ -1,4 +1,3 @@
-##rm(list=ls())
 
 ## This script for a threshold of 10 events
 ## probably introducing noise at the 10-25 range
@@ -7,11 +6,11 @@
 
 
 ## Load packages to clean and work with data
-
-library(ggplot2)
-library(tidyverse)
-library(readxl)
-library(quanteda)
+## Expects:
+#library(ggplot2) ## ggplot2_3.4.4
+#library(tidyverse) ## V 1.3.1
+#library(readxl) ## readxl_1.4.0
+#library(quanteda) ## version 3.0.0
 
 source("./00articleModelingRep.R") ## 4/22: this is the version that replicates the findings.
 ##Original stopword list & quandeda cleaning
@@ -24,8 +23,8 @@ source("./00dominantFramingRep.R") ## wrapper to summarize yearly STM
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath <- "./data/"
-outPath <- "./output/"
+dataPath <- "./"
+outPath <- "./"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))
 
@@ -140,8 +139,8 @@ as <- as.data.frame(tiny.yearsum[179])
 
 ulfa <- as.data.frame(tiny.yearsum[132])
 
-save(tiny.yearsum, tiny.basedata,
-     file=paste0(outPath,
-         "01measurementScaleUpInProgressTiny55.Rdata"))
+#save(tiny.yearsum, tiny.basedata,
+#     file=paste0(outPath,
+#         "01measurementScaleUpInProgressTiny55.Rdata"))
 
 print("Script 1 Finished, data saved")

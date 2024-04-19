@@ -1,11 +1,3 @@
-****************************************************************************************************		
-* Replication file 3 for:
-* Foster, 'Subject to Change: Quantifying Transformation in Armed Conflict Actors'
-* This file compares inclusion criteria for minimum numbers of articles per group/year
-* Includes a replication of
-* 'The Intractability of Islamist Insurgencies: Islamist Rebels and the Recurrence of Civil War"
-* Desiree Nilsson & Isak Svensson, International Studies Quarterly
-***************************************************************************************************/
 
 clear all
 
@@ -29,14 +21,9 @@ ssc install  coefplot
 
 ****************************************************************************************************
 
-* set working directory:
-* MJF: Set to Replication directory; I'm using my own throughout
-
-cd "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication"
-
 * load data:
 * Threshold 1 article/year for all years (basically same):
-use "/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/data/terminationplus_10_1.dta"
+use "./data/terminationplus_10_1.dta"
 
 sort dyadid year
 
@@ -176,5 +163,5 @@ set scheme lean2
 
 ** Figure A[X] of Document ** 
 
-cf0 coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white) title("N = 10, T= 100')
-graph export '/Users/Promachos/Dropbox (Personal)/TransformationEmpiricalModels/Replication/STC_Replication/thresh_10_1.pdf', as(pdf) name("Graph") replace
+coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white) title("N = 10, T= 100")
+graph export thresh_10_1.pdf, as(pdf) name("Graph") replace

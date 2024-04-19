@@ -12,7 +12,7 @@ library(readxl)
 library(stargazer)
 library(stringi)
 
-outPath <- "./output/"
+outPath <- "./"
 
 load(file=paste0(outPath,
          "02dfyearsumAndRelatedTinyUpdate.Rdata"))

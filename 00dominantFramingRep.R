@@ -2,8 +2,6 @@
 ## Wrapper around topic model x yearly topic proportion:
 
 dominantFraming <- function(groupID, ucdpdata){
-
-    ## clip out the data about the group:
     dat <- ucdpdata[which(ucdpdata$side_b_new_id==groupID|
                           ucdpdata$side_a_new_id == groupID),]
 
@@ -38,7 +36,7 @@ dominantFraming <- function(groupID, ucdpdata){
 
     ## summarize by max topic:
 
-    print(head(dat))
+   # print(head(dat))
     
     dat$factor <- as.factor(dat$factor)
     tmp3 <- dat %>%
@@ -47,7 +45,7 @@ dominantFraming <- function(groupID, ucdpdata){
                 countT1 = sum(factor=="T1", na.rm = T),
                 countT2 =  sum(factor=="T2", na.rm = T))
 
-    ## tmp3 becomesm "yearsum"
+    ## tmp3 becomes "yearsum"
     
     tmp3$propT1 <- round(tmp3$countT1/
                          (tmp3$countT1+tmp3$countT2), 2)
@@ -81,17 +79,15 @@ dominantFraming <- function(groupID, ucdpdata){
     dat[which(dat$maxtopic==2), "frexWords"] <-t2frex
     dat[is.na(dat$maxtopic), "frexWords"] <- "NA"
 
-    ##FREX Words into yearsum:   
-    if(tmp3$countT1==tmp3$countT2){
-        tmp3$frexWords <- "Both"
-    }else{
-        tmp3[which(tmp3$countT1 > tmp3$countT2),
-             "frexWords"] <- t1frex
-        tmp3[which(tmp3$countT1 < tmp3$countT2),
-             "frexWords"] <-  t2frex
-    }
+    ##FREX Words into yearsum: 
 
-    
+    tmp3[which(tmp3$countT1==tmp3$countT2),
+           "frexWords"] <- "Both"
+    tmp3[which(tmp3$countT1 > tmp3$countT2),
+             "frexWords"] <- t1frex
+    tmp3[which(tmp3$countT1 < tmp3$countT2),
+             "frexWords"] <-  t2frex
+
     outlist <- list(yearsum=tmp3, basedata=dat)
     return(outlist)
 }

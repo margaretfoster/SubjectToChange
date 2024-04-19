@@ -10,8 +10,10 @@ library(sandwich)
 library(lmtest)
 library(plm)
 library(ggplot2)
+library(broom)
+library(pscl)
 
-outPath <- "./output/"
+outPath <- "./"
 
 load(file=paste0(outPath,
          "02dfyearsumAndRelatedTinyUpdate.Rdata"))
@@ -45,8 +47,6 @@ dim(df.basedata) ## 190688
 table(df.basedata$where_prec)
 ## conflict-year version:
 
-colnames(df.yearsum) ## group-year
-
 ## need group-country-year
 ## start by seeing how often group-year maps
 ## onto a single country
@@ -55,19 +55,13 @@ gcy <- unique(df.basedata[,c("year",
                            "side_b_new_id",
                            "country")])
 
-dim(gcy) ## 2655 x 3
-
-length(unique(gcy$year)) ## 32
-
-
-## so any group ID with more than 32 entries has more than one
+## Takeaway: any group ID with more than 32 entries has more than one
 ## country (NB: this is true, but not an exhaustive list of
 ## all groups with more than one country of operation.)
 
 gcy2 <- as.data.frame(table(gcy$side_b_new_id))
 gcy2 <- gcy2[rev(order(gcy2$Freq)),]
 
-head(gcy2)
 ## 12 actors in the data >  32 times
 ## 234 = IS (140 entries)
 ## 323 = PKK
@@ -92,34 +86,34 @@ df <- df.basedata %>%
     group_by(year, country, groupID) %>%
     summarise(n=n())
 
-dim(df) ## 2655
 
+## Optional descriptives:
 ## Cross-check outcome via AQIM:
-print(df[which(df$groupID==539),], n=38)
+#print(df[which(df$groupID==539),], n=38)
 
 ## event clarity:
 ## 1 no previous aggregation; 2 is previous aggregation
-summary(df.basedata[which(
-    df.basedata$groupID==539),]$event_clarity)
+#summary(df.basedata[which(
+#    df.basedata$groupID==539),]$event_clarity)
 ## min 1 max 2 for AQIM, mean = 1.048
 
-summary(df.basedata[which(
-    df.basedata$groupID==488),]$event_clarity)
+#summary(df.basedata[which(
+#    df.basedata$groupID==488),]$event_clarity)
 ## min 1 max 2; mean= 1.175;
 
 ## date precision
-summary(df.basedata[which(
-    df.basedata$groupID==488),]$date_prec)
+#summary(df.basedata[which(
+#    df.basedata$groupID==488),]$date_prec)
 ## min 1 (exact day)  max 5 (between month - year); mean= 1.493
 
-summary(df.basedata[which(
-    df.basedata$groupID==488),]$where_prec)
+#summary(df.basedata[which(
+#    df.basedata$groupID==488),]$where_prec)
 
 ## min 1 (exact location known) max 6 (only country known);
 ## mean= 2,727 (3= only second-order admin division known)
 
-summary(df.basedata[which(
-    df.basedata$groupID==539),]$where_prec)
+#summary(df.basedata[which(
+#    df.basedata$groupID==539),]$where_prec)
 ## min 1, max 6; mean 2.4
 
 ## Want group-country-year summary of the precision codes
@@ -127,7 +121,6 @@ summary(df.basedata[which(
 ## b/c that will distort the clarity
 ##  Occurance of "7" -- 175 x 57
 ## (in data this is Somali, Sri Lankan, and Yemeni piracy)
-##
 
 
 df.basedata[which(df.basedata$where_prec==7),
@@ -166,61 +159,32 @@ df.precision[which(df.precision$country_id==345),
 ## (Presumably in their replication data)
 ## & V-Dem's  Freedom of Expression and Alternative Sources of Information Index
 
-summary(df.basedata$year) ## 1989-2020
 
-##meddat <- read_csv(
-##    paste0("../medrestrictionsdata/Carey-Godhes/",
-##           "analysis-data-fullsample.csv"))
-
-
-meddat <- read_csv("./data/MSFS-estimates_full-3x2000.csv")
-
-
-##fhdat <- read_excel(
-##    paste0("../medrestrictionsdata/",
-##           "FIW_1973-2022.xlsx"))
-
-##dim(fhdat)
-
-dim(meddat) ## 10739
-summary(meddat)## country-year  1948-2017
-
-colnames(meddat)
-colnames(df.precision)
-
-dim(df.precision)
+meddat <- read_csv("./MSFS-estimates_full-3x2000.csv")
 
 df.media <- df.precision %>%
     left_join(meddat,
               by = c("year"= "year",
                   "cow" = "abbr"))
 
-dim(df.media) ## 2655 x12
-
 ## Group-country-year average of
 ## UCDP precision
 
-colnames(df.media)
-
-summary(df.media$MSF)
+#summary(df.media$MSF)
 
 ## range is [0,1],
 ## min is 0.0127; mean is .5323; max .9972
 
 nas <- df.media[is.na(df.media$MSF)==TRUE,]
 
-dim(nas)
-colnames(nas)
+## Optional:
+## Print  missing years covered in their data:
+## To sanity check
 
-table(nas$iso3c)
-table(nas$year) ## vast majority 2018, 2019, 2020
-## Acceptable
-
-## which are the missing years covered in their data:
-print(nas[which(nas$year<2018),
-          c("year", "country_id",
-             "country",
-            "cow", "ccode")],n=41)
+#print(nas[which(nas$year<2018),
+#          c("year", "country_id",
+#             "country",
+ #           "cow", "ccode")],n=41)
 
 ## Bring group-year change info into the
 ## group-country-year df.precision + media info
@@ -229,8 +193,6 @@ df.precision2 <- df.media %>%
     left_join(df.yearsum,
               by=c("groupID"= "groupID",
                   "year"= "year"))
-
-dim(df.precision2) ## 2655 x 30
 
 
 ## %%%%%%%%%%%%
@@ -262,7 +224,7 @@ dat <-df.precision2 %>%
 
 dim(dat)
 
-print(dat[,c(1,2,3,29:31)], n=50)
+#print(dat[,c(1,2,3,29:31)], n=50)
 
 ## direct three-way index for group-country-year
 ## for the zero inflated neg. binomial
@@ -360,10 +322,17 @@ mod2B<- plm(propdif.L1 ~ mean.loc.prec +
             index=c("groupID"),
             data=dat)
 
+head(dat$propdif.L1)
+head(dat$mean.loc.prec)
+head(dat$mean.clarity)
+head(dat$mean.time.prec)
+head(dat$MSF)
+
+
 summary(mod2B)
 
 
-df <- tidy(mod2B)
+df <- broom::tidy(mod2B)
 ci95 <- confint(mod2B, level=0.95) %>%
   data.frame() %>%
   rename("conf.low95" = "X2.5..",
@@ -404,6 +373,8 @@ gg1 <- ggplot(results,
 
 gg1
 ggsave(gg1,
+       width = 6, 
+       height = 8,
        file="lmAbsPropDifL1.pdf")
 
 ## Another view:
@@ -413,10 +384,6 @@ ggsave(gg1,
 ## less precise
 ## This is a zero inflated negative binomial since
 ## have 0s from no changes & also zeros from year after deltas
-
-
-library("sandwich")
-library(pscl)
 
 ## need to remove NA for clustered errors:
 
@@ -481,79 +448,6 @@ gg2 <- ggplot(results,
 
 gg2
 ggsave(gg2,
+       width = 6, 
+       height = 8,
        file="negBinomMedia.pdf")
-
-
-## reintroduce the haddelta measure:
-
-##Which groups had a delta of at least |1|
-
-dat$haddelta1 <- 0
-dat$haddelta1 <- ifelse(dat$groupID
-                        %in% haddelta1, 1, 0)
-
-table(dat$haddelta1) ## 625 no; 2030 yes
-
-
-
-## Any connection between having change at all
-## and the precision variables?
-## Result: none at all (SE grouped at groupID)
-table(dat$haddelta1) ## 625 no; 2030 yes
- 
-mod4 <- plm(haddelta1 ~ mean.loc.prec +
-            mean.clarity + mean.time.prec +  MSF,
-            model=c("random"),## "random effects"
-            effects="year",
-            index=c("groupID"), #by group
-            data=dat)
-
-summary(mod4)
-
-df <- tidy(mod4)
-ci95 <- confint(mod4, level=0.95) %>%
-  data.frame() %>%
-  rename("conf.low95" = "X2.5..",
-         "conf.high95" = "X97.5..")
-
-ci90 <- confint(mod4, level=0.9) %>%
-  data.frame() %>%
-  rename("conf.low90" = "X5..",
-         "conf.high90" = "X95..")
-
-results <- bind_cols(df,
-                     ci95,
-                     ci90) %>%
-    rename(Variable = term,
-           Coefficient = estimate,
-           SE = std.error) %>%
-           filter(Variable != "(Intercept)")
-
-results <- results %>%
-     mutate_if(is.numeric, ~round(., 1))
-
-gg3 <- ggplot(results,
-       aes(x = Variable, y = Coefficient)) +
-        geom_hline(yintercept = 0,
-                   colour = gray(1/2), lty = 2) +
-        geom_point(aes(x = Variable,
-                    y = Coefficient)) +
-        geom_linerange(aes(x = Variable,
-                     ymin = conf.low90,
-                     ymax = conf.high90),
-                   lwd = 1) +
-        geom_linerange(aes(x = Variable,
-                     ymin = conf.low95,
-                     ymax = conf.high95),
-                   lwd = 1/2) +
-        ggtitle("Outcome: Had Change Year At All") +
-    coord_flip() +
-    theme_bw()
-
-gg3
-
-## more precision: slightly more llikelihood to have found a change
-## more press freedom; more likely
-## average clarity in reporting no connection
-##
-

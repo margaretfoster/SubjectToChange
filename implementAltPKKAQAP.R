@@ -16,7 +16,7 @@ source("articleModelingAlt.R") ## wrapper for text prep + model with K as a para
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath <- "./data/"
+dataPath <- "./"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))
 

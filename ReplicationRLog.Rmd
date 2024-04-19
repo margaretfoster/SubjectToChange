@@ -7,7 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
-renv::status()
 ```
 
 ## Introduction
@@ -17,6 +16,7 @@ This document produces a replication log for the tables and figures made in R fo
 These results are generated from an R data file that was produced as part of the research, 01measurementScaleUpInProgressTiny55.Rdata.
 Replication code to produce the data can be found in the "01measurementFullDataTinyThreshRep.R" R script. 
 Another data file, 02dfyearsumAndRelatedTinyUpdate.Rdata, is produced by "02tinyThreshTransformVarRep.R" in the replication package.
+
 
 ## Manuscript and Appendix Figure 1
 ```{r Figs1, echo=FALSE}
@@ -30,7 +30,7 @@ library(readxl)
 library(stargazer)
 library(stringi)
 
-outPath <- "./output/"
+outPath <- "./"
 
 load(file=paste0(outPath,
          "02dfyearsumAndRelatedTinyUpdate.Rdata"))
@@ -206,14 +206,13 @@ library(dplyr)
 library(corrplot)
 library(stargazer)
 
-dataPath <- "./data/"
+dataPath <- "./"
 
 ## Read in Nilsson and Svenson's data:
 termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))
 
-changes <- load(paste0("./output/",
-                       "02dfyearsumAndRelatedTinyUpdate.Rdata"))
+changes <- load("./02dfyearsumAndRelatedTinyUpdate.Rdata")
 
 idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
 
@@ -309,8 +308,12 @@ df <- as.data.frame(cbind(binaries,
                                 table(terminationplus$haddelta1.5),
                                 table(terminationplus$haddelta2))))
 
+print(table(terminationplus$delta1))
+table(terminationplus$delta1_L2)
+
+
 ## Article Figure 2:
-colnames(df) <- c("Variable", "No", "Yes")
+#colnames(df) <- c("Variable", "No", "Yes")
 stargazer(df, summary=FALSE, rownames=FALSE)
 
 
@@ -341,7 +344,7 @@ colnames(terminationplus)[which(
 
 ## Pass out data
 ##write_dta(data=terminationplus,
-##          "./data/terminationplus.dta")
+##          "./terminationplus.dta")
 
 ##%%%%%%%%%%%%%%%%%%%%%%%
 ## Make correlation plots:
@@ -464,7 +467,7 @@ library(tidyverse)
 library(stargazer)
 library(ggrepel)
 
-load(file="./output/02dfyearsumAndRelatedTinyUpdate.Rdata")
+load(file="./02dfyearsumAndRelatedTinyUpdate.Rdata")
 
 ##Which groups had a delta of at least |1|:
 haddelta1 <- df.yearsum[which(
@@ -886,7 +889,7 @@ library(plm)
 library(pscl)
 library(broom)
 
-outPath <- "./output/"
+outPath <- "./"
 
 load(file=paste0(outPath,
          "02dfyearsumAndRelatedTinyUpdate.Rdata"))
@@ -922,9 +925,7 @@ df.precision$cow <- countrycode(df.precision$country_id,
 ## (Presumably in their replication data)
 ## & V-Dem's  Freedom of Expression and Alternative Sources of Information Index 
 
-meddat <- read_csv(
-    paste0("./data/",
-    "MSFS-estimates_full-3x2000.csv"),
+meddat <- read_csv("./MSFS-estimates_full-3x2000.csv",
     show_col_types=FALSE)
 
 

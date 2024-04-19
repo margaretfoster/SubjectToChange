@@ -101,12 +101,9 @@ su delta1 delta1_L2 numchanges counter haddelta1 haddelta15 haddelta2
 global X1 territory strongstart oilstart youthstartap muslimajstart
 global X2 _yrs _yrs_sq _yrs_cu
 
-<</dd_do>>
-
 ************************************************
 * Manuscript Figure 6 and Appendix Figure 11
 ************************************************
-<<dd_do>>
 
 *Model 1- Replication*     
 
@@ -163,6 +160,13 @@ estimates store YearsSinceLast
 outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(YearsSinceLast) title(Model Comparisons)
 
 
+//Model 4: Number of changes
+
+stcox numchanges islamist $X1, cluster(dyadid) strata(order)  nolog 
+estimates store NumChanges
+
+outreg using termination-t1.doc, se var hr starlevels(10 5 1) sigsymbols(+,*,**) note (Robust standard errors in parentheses clustered on dyad.) merge tex frag ctitle(NumChanges) title(Model Comparisons)
+
 * Compare Results:
 
 * d/l lean2 plot for bw graph *
@@ -171,12 +175,12 @@ set scheme lean2
 
 ** Figure 6 of Document ** 
 coefplot(RepModel, label(Replication))(SmallChange, label(Low Change))(MedChange, label(Med. Change))(HighChange, label(High Change)), drop(_cons) xline(0) graphregion(color(white)) bgcolor(white)
-graph export "TerminationCoefPlotUp.pdf", as(pdf) name("Graph")
+graph export "TerminationCoefPlotUp.pdf", as(pdf) name("Graph") replace
 
 
 *Appendix Figure 11*
 coefplot(SmallChange, label(Low Change))(YearofChangeL2, label(Two-Year Window))(YearsSinceLast, label(Years Since Change))(NumChanges, label(Change Frequency)), drop(_cons) xline(0)
-graph export "TerminationCoefPlotExtUp.pdf", as(pdf) name("Graph")
+graph export "TerminationCoefPlotExtUp.pdf", as(pdf) name("Graph") replace
 
 
 *******************************************
@@ -262,33 +266,12 @@ label variable rebext "Rebel support"
 
 
 ************************************************
-* CONTROL VARIABELS
+* CONTROL VARIABLES
 ************************************************
 
 global X1 territory strongstart oilstart youthstartap muslimajstart
 global X2 _yrs _yrs_sq _yrs_cu
 
-************************************************
-* KW Figures (Appendix Figure 14)
-************************************************
-
-*KM Plots for Islamist (replication); deltas
-
-set scheme plottig
-
-sts graph, legend (cols(1)) by(islamist) ci 
-
-*graph export "recurrenceKMPlotI.pdf", as(pdf) name("Graph")
-
-sts graph, legend (cols(1)) by(haddelta1) ci  
-*graph export "recurrenceKMPlotd1.pdf", as(pdf) name("Graph")
-
-sts graph, legend (cols(1)) by(haddelta15) ci 
-*graph export "recurrenceKMPlotd15.pdf", as(pdf) name("Graph")
-
-sts graph, legend (cols(1)) by(haddelta2) ci
-
-*graph export "recurrenceKMPlotd2.pdf", as(pdf) name("Graph")
 
 ************************************************
 * Appendix Figure 15
