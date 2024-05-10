@@ -8,7 +8,7 @@ groundhog_day <- "2024-02-01" ##
 groundhog.library(c("tidyverse", "haven", "dplyr"),
                   groundhog_day)
 
-dataPath <- "./"
+dataPath <- "./data/"
 
 termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))

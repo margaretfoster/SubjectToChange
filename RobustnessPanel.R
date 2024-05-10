@@ -23,7 +23,7 @@ library(readxl)
 source("./00articleModelingRep.R") 
 source("./00dominantFramingRep.R") ## wrapper to summarize yearly STM
 
-dataPath <- "./"
+dataPath <- "./data/"
 outPath <- "./"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))
@@ -215,7 +215,7 @@ df.yearsumN <- rbind(df.yearsum2,
                      zeros)
 
 
-dim(df.yearsumN) 
+#dim(df.yearsumN) 
 
 ## Convert NAN and NA to zero
 ## NAN are caused by years with no articles
@@ -316,7 +316,7 @@ df.yearsumN[which(abs(df.yearsumN$propdif.L2)>= 2 |
 
 #table(df.yearsumN$delta2_L2) ##196 years in 68 different groups
 
-length(unique(df.yearsumN[which(df.yearsumN$delta2_L2==1),]$groupID)) ##80
+#length(unique(df.yearsumN[which(df.yearsumN$delta2_L2==1),]$groupID)) ##80
 
 #hadgap2L2 <- unique(df.yearsumN[df.yearsumN$delta2_L2==1,]$groupID)
 
@@ -355,7 +355,7 @@ df.yearsumN[which(abs(df.yearsumN$propdiff) <= .5 &
 
 
 ## gap between the topics is less than .5
-table(df.yearsumN$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
+#table(df.yearsumN$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
 
 #length(unique(df.yearsumN[which(df.yearsumN$gap50==1),]$groupID))
 
@@ -421,7 +421,7 @@ df.basedataN$Th <- Th
 print("Part 2 finished, data saved")
 
 ## Prep for termination rep:
-dataPath <- "./"
+dataPath <- "./data/"
 termination <- read_dta(paste0(dataPath,
                                "Termination-data-ISQ.dta"))
 
@@ -441,9 +441,9 @@ t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid
                        by.y=("old_id"),
                        all.x=TRUE)
   
-  dim(termination)
+ # dim(termination)
   
-  colnames(termination)
+ # colnames(termination)
   
   ids.yearsum <- unique(df.yearsumN$groupID)
   terminationplus1 <- merge(x=termination,
@@ -487,9 +487,9 @@ t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid
   haddelta2 <- unique(terminationplus[which(
     terminationplus$delta2==1),]$new_id)
   
-  length(haddelta1) ## 85 groups
-  length(haddelta1.5) ## 51 groups
-  length(haddelta2) ## 27 groups
+  #length(haddelta1) ## 85 groups
+  #length(haddelta1.5) ## 51 groups
+  #length(haddelta2) ## 27 groups
   
   ## Add in the indicator variable for whether
   ## the militant group in a dyad had a change
@@ -511,38 +511,27 @@ t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid
     group_by(new_id) %>%
     summarise(numchanges=sum(delta1==1))
   
-  summary(numchanges$numchanges) ## 0-4 (78 NA)
-  
-  hist(numchanges$numchanges)
-  
-  p <- ggplot(numchanges,
-              aes(x=numchanges)) +
-    geom_histogram() +
-    xlab("Number of Frame Change Years") +
-    ylab("Count")+
-    ggtitle("Summary of Number of Changes Variable")+
-    theme_bw()
-  
-  p
+  #summary(numchanges$numchanges) ## 0-4 (78 NA)
+
   
   ## Outlier identification:
-  numchanges[which(numchanges$numchanges==4),]##2
-  numchanges[which(numchanges$numchanges==3),] ## 8
+  #numchanges[which(numchanges$numchanges==4),]##2
+  #numchanges[which(numchanges$numchanges==3),] ## 8
   
-  numchanges[which(numchanges$numchanges==2),] ##19
+ # numchanges[which(numchanges$numchanges==2),] ##19
   
   
   ## 4 changes:
-  cols <- c("sideb", "frexWords", 'year')
-  terminationplus[which(terminationplus$new_id==277),cols]## Abu Sayyaf
-  terminationplus[which(terminationplus$new_id==743), cols]##  FARC
+  #cols <- c("sideb", "frexWords", 'year')
+ # terminationplus[which(terminationplus$new_id==277),cols]## Abu Sayyaf
+  #terminationplus[which(terminationplus$new_id==743), cols]##  FARC
   
   ## merge back in:
   terminationplus <- terminationplus %>%
     left_join(numchanges,
               by="new_id") 
   
-  dim(terminationplus) ## 1229 x 90
+ # dim(terminationplus) ## 1229 x 90
   
   ##%%%%%%%%%%%%%%%%%%%%%%%%%
   ## summary of max years since change:
@@ -555,26 +544,26 @@ t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid
   
   ysC <- na.omit(ysC)
   
-  dim(ysC) ##213 x 2
+ # dim(ysC) ##213 x 2
   
-  head(ysC) ## groups with a longest time after change:
+  #head(ysC) ## groups with a longest time after change:
   ## 326 (16 years); 338 (14 years); 551 (12 years); 169 (11 years); 325 (11 years)
   
   ## Some qualitative perspective, if desired:
-  terminationplus[which(terminationplus$new_id==326),
-                  c(cols, "counter", "delta1")]## UFLA
+  #terminationplus[which(terminationplus$new_id==326),
+  #                c(cols, "counter", "delta1")]## UFLA
   
-  terminationplus[which(terminationplus$new_id==338),
-                  cols]## Republic of Nagorno-Karabakh
+  #terminationplus[which(terminationplus$new_id==338),
+  #                cols]## Republic of Nagorno-Karabakh
   
-  terminationplus[which(terminationplus$new_id==551),
-                  cols]## OLF
+  #terminationplus[which(terminationplus$new_id==551),
+  #                cols]## OLF
   
-  terminationplus[which(terminationplus$new_id==169),
-                  cols]## CPP
+  #terminationplus[which(terminationplus$new_id==169),
+   #               cols]## CPP
   
-  terminationplus[which(terminationplus$new_id==325),
-                  cols]## "Kashmir insurgents"
+  #terminationplus[which(terminationplus$new_id==325),
+   #               cols]## "Kashmir insurgents"
   
   
   ##%%%%%%%%%%%%%%%%%
@@ -649,7 +638,7 @@ t.groups.after1989 <- unique(termination[which(termination$year>=1989),]$sidebid
   ## clean up the Th less than zero (avoid period in file path)
   if(Th < 1){
     Thm= Th*100}else{Thm=Th}
-  print(Thm)
+  #print(Thm)
   
   write_dta(data=terminationplus,
             paste0("./data/terminationplus_",N, "_", Thm, ".dta"))

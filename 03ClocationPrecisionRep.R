@@ -160,7 +160,7 @@ df.precision[which(df.precision$country_id==345),
 ## & V-Dem's  Freedom of Expression and Alternative Sources of Information Index
 
 
-meddat <- read_csv("./MSFS-estimates_full-3x2000.csv")
+meddat <- read_csv("./data/MSFS-estimates_full-3x2000.csv")
 
 df.media <- df.precision %>%
     left_join(meddat,

@@ -1,0 +1,35 @@
+\begin{center}
+\smallskip\begin{large}Model Comparisons\end{large}\\
+\smallskip
+\begin{tabular}{lccccccc}
+\hline \noalign{\smallskip}Repl. Model &  &  &  &  &  &  & \\
+\noalign{\smallskip}\hline \noalign{\smallskip}Islamist claim & 0.592 & 0.647 & 0.658 & 0.608 & 0.654 &  & 0.752\\
+ & \begin{footnotesize}(0.088)**\end{footnotesize} & \begin{footnotesize}(0.098)**\end{footnotesize} & \begin{footnotesize}(0.096)**\end{footnotesize} & \begin{footnotesize}(0.092)**\end{footnotesize} & \begin{footnotesize}(0.106)**\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.122)+\end{footnotesize}\\
+\noalign{\smallskip}Territory & 1.291 & 1.465 & 1.365 & 1.313 & 1.346 & 1.710 & 1.413\\
+ & \begin{footnotesize}(0.159)*\end{footnotesize} & \begin{footnotesize}(0.168)**\end{footnotesize} & \begin{footnotesize}(0.169)*\end{footnotesize} & \begin{footnotesize}(0.166)*\end{footnotesize} & \begin{footnotesize}(0.204)+\end{footnotesize} & \begin{footnotesize}(0.311)**\end{footnotesize} & \begin{footnotesize}(0.210)*\end{footnotesize}\\
+\noalign{\smallskip}Strong rebels & 0.874 & 0.901 & 0.917 & 0.880 & 0.853 & 0.614 & 0.881\\
+ & \begin{footnotesize}(0.111)\end{footnotesize} & \begin{footnotesize}(0.115)\end{footnotesize} & \begin{footnotesize}(0.113)\end{footnotesize} & \begin{footnotesize}(0.112)\end{footnotesize} & \begin{footnotesize}(0.127)\end{footnotesize} & \begin{footnotesize}(0.166)+\end{footnotesize} & \begin{footnotesize}(0.126)\end{footnotesize}\\
+\noalign{\smallskip}Oil & 0.996 & 0.998 & 0.998 & 0.997 & 0.997 & 0.982 & 1.001\\
+ & \begin{footnotesize}(0.005)\end{footnotesize} & \begin{footnotesize}(0.005)\end{footnotesize} & \begin{footnotesize}(0.005)\end{footnotesize} & \begin{footnotesize}(0.005)\end{footnotesize} & \begin{footnotesize}(0.006)\end{footnotesize} & \begin{footnotesize}(0.009)*\end{footnotesize} & \begin{footnotesize}(0.006)\end{footnotesize}\\
+\noalign{\smallskip}Youth bulge/adult pop. & 1.018 & 1.022 & 1.022 & 1.021 & 1.025 & 1.029 & 1.031\\
+ & \begin{footnotesize}(0.012)\end{footnotesize} & \begin{footnotesize}(0.013)+\end{footnotesize} & \begin{footnotesize}(0.012)+\end{footnotesize} & \begin{footnotesize}(0.013)+\end{footnotesize} & \begin{footnotesize}(0.016)\end{footnotesize} & \begin{footnotesize}(0.026)\end{footnotesize} & \begin{footnotesize}(0.017)+\end{footnotesize}\\
+\noalign{\smallskip}Muslim majority & 1.098 & 1.085 & 1.029 & 1.086 & 1.062 & 0.988 & 0.983\\
+ & \begin{footnotesize}(0.121)\end{footnotesize} & \begin{footnotesize}(0.116)\end{footnotesize} & \begin{footnotesize}(0.114)\end{footnotesize} & \begin{footnotesize}(0.121)\end{footnotesize} & \begin{footnotesize}(0.143)\end{footnotesize} & \begin{footnotesize}(0.161)\end{footnotesize} & \begin{footnotesize}(0.133)\end{footnotesize}\\
+\noalign{\smallskip}Had Change |1| &  & 0.625 &  &  &  &  & \\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.061)**\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize}\\
+\noalign{\smallskip}Had Change |1.5| &  &  & 0.698 &  &  &  & \\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.080)**\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize}\\
+\noalign{\smallskip}Had Change |2| &  &  &  & 0.849 &  &  & \\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.116)\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize}\\
+\noalign{\smallskip}Change in Prev 2 years &  &  &  &  & 1.181 &  & \\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.174)\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize}\\
+\noalign{\smallskip}Years From Change &  &  &  &  &  & 1.035 & \\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.057)\end{footnotesize} & \begin{footnotesize}\end{footnotesize}\\
+\noalign{\smallskip}Change Frequency &  &  &  &  &  &  & 0.799\\
+ & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}\end{footnotesize} & \begin{footnotesize}(0.047)**\end{footnotesize}\\
+\noalign{\smallskip}$N$ & 1,020 & 1,020 & 1,020 & 1,020 & 931 & 557 & 927\\
+\noalign{\smallskip}\hline\end{tabular}\\
+\smallskip\begin{footnotesize}+ $p<0$.1; * $p<0$.05; ** $p<0$.01\end{footnotesize}\\
+\begin{footnotesize}Robust standard errors in parentheses clustered on dyad.\end{footnotesize}\\
+\smallskip
+\end{center}

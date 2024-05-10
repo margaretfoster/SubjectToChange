@@ -192,7 +192,7 @@ ggsave(p.aqap2,
        width=12, 
        height=8,
        units=c("in"),
-       file="annotedAQAPGraph.pdf")
+       file="./images/annotedAQAPGraph.pdf")
 
 #############
 ## Abu Sayyaf
@@ -348,7 +348,7 @@ ggsave(p.as2,
        width=12, 
        height=8,
        units=c("in"),
-       file="annotedAbuSayyaf.pdf")
+       file="./images/annotedAbuSayyaf.pdf")
 
 #############
 ## ULFA
@@ -484,7 +484,7 @@ ggsave(p.ulfa2,
        width=12, 
        height=8,
        units=c("in"),
-       file="annotedulfa.pdf")
+       file="./images/annotedulfa.pdf")
 
 #### Before/after change
 
@@ -695,4 +695,46 @@ ggsave(p.lra2,
        width=12, 
        height=8,
        units=c("in"),
-       file="annotedLRA.pdf")
+       file="./images/annotedLRA.pdf")
+
+
+##############################
+## PKK
+#############################
+pkk.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==323),]
+pkk.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 323), ]
+
+## FREX Words to overlay
+t1 <- unique(pkk.sub.year[which(
+  pkk.sub.year$propT1>.75),]$frexWords)
+
+t2 <- unique(pkk.sub.year[which(
+  pkk.sub.year$propT2>.75),]$frexWords)
+
+## Plot
+
+textanchor <- max(pkk.sub$year)-10
+num.articles <- dim(pkk.sub)[1]
+x.breaks <- min(unique(pkk.sub$year)):max(unique(pkk.sub$year))
+
+p.pkk <-ggplot(pkk.sub, aes(x=year, y=scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=pkk.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  annotate("text", x = textanchor, y =1.15, label = t2)+
+  annotate("text", x =textanchor, y = -1.15, label = t1) +
+  xlab("Year")+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("PKK Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+p.pkk
+
+ggsave(p.pkk, file="./images/PKKYearPlots.pdf")
+

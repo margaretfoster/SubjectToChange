@@ -94,9 +94,6 @@ source("04nsPrepRecurrance.R")
 source("RobustnessPanel.R") 
 ## NB: takes about 4 hours to run
 
-## A few descriptive figures: 
-source("06ThresholdPanelDescriptives.R")
-
 ## Appendix Section 5: Comparison of Topic Configurations
 
 ## ONLF and PKK Searchk K Plots

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Promachos" />
 
-<meta name="date" content="2024-04-16" />
+<meta name="date" content="2024-05-10" />
 
 <title>01measurementFullDataTinyThreshRep.R</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">01measurementFullDataTinyThreshRep.R</h1>
 <h4 class="author">Promachos</h4>
-<h4 class="date">2024-04-16</h4>
+<h4 class="date">2024-05-10</h4>
 
 </div>
 
@@ -365,9 +365,20 @@ display: none;
 
 ## Load packages to clean and work with data
 ## Expects:
+
+#groundhog_day &lt;- &quot;2024-02-01&quot; ##
+#groundhog.library(c(&quot;quanteda&quot;, &quot;ggplot2&quot;,
+ #                   &#39;tidyverse&#39;, &#39;readxl&#39;),
+  #                groundhog_day,
+   #               ignore.deps = c(&quot;MASS&quot;, &quot;Matrix&quot;, &quot;RcppArmadillo&quot;, 
+     #                             &quot;fastmatch&quot;, &quot;RcppParallel&quot;,
+    #                              &quot;SnowballC&quot;, &quot;stopwords&quot;, 
+     #                             &#39;Rcpp&#39;, &#39;ISOcodes&#39;),
+      #            tolerate.R.version=&#39;4.3.3&#39;)
+
 #library(ggplot2) ## ggplot2_3.4.4
 #library(tidyverse) ## V 1.3.1
-#library(readxl) ## readxl_1.4.0
+library(readxl) ## readxl_1.4.0
 #library(quanteda) ## version 3.0.0
 
 source(&quot;./00articleModelingRep.R&quot;) ## 4/22: this is the version that replicates the findings.
@@ -381,7 +392,7 @@ source(&quot;./00dominantFramingRep.R&quot;) ## wrapper to summarize yearly STM
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath &lt;- &quot;./&quot;
+dataPath &lt;- &quot;./data/&quot;
 outPath &lt;- &quot;./&quot;
 
 ucdp.ged&lt;- read.csv(paste0(dataPath,&quot;ged211.csv&quot;))

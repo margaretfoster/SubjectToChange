@@ -11,7 +11,7 @@
 
 <meta name="author" content="Promachos" />
 
-<meta name="date" content="2024-04-16" />
+<meta name="date" content="2024-05-10" />
 
 <title>implementAltPKKAQAP.R</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">implementAltPKKAQAP.R</h1>
 <h4 class="author">Promachos</h4>
-<h4 class="date">2024-04-16</h4>
+<h4 class="date">2024-05-10</h4>
 
 </div>
 
@@ -375,7 +375,7 @@ source(&quot;articleModelingAlt.R&quot;) ## wrapper for text prep + model with K
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath &lt;- &quot;./&quot;
+dataPath &lt;- &quot;./data/&quot;
 
 ucdp.ged&lt;- read.csv(paste0(dataPath,&quot;ged211.csv&quot;))
 
@@ -433,7 +433,74 @@ ged.as &lt;-ged.tiny[which(ged.tiny$side_b_dset_id==277),]
 ged.ulfa &lt;-ged.tiny[which(ged.tiny$side_b_dset_id==326),]
 ##ged.unita &lt;-ged.tiny[which(ged.tiny$side_b_dset_id==),]
 
-##%%%%%%%%%%%%%%%%%%%
+
+## Figure Appendix 9(b): ONLF at K=4
+## ONLF at:
+## K=4 [Alternate spec]
+## run it through article analysis alt, then do the processing
+## so that I don&#39;t have to spend too much time building a very flexible
+## script to scale up and down
+
+alt4 &lt;- article.analysis.alt(ged.onlf,
+                             k=4)</code></pre>
+<pre><code>## [1] 700  49
+## [1] &quot;check 1 4/8&quot;
+## [1] &quot;check 2 4/8&quot;
+## [1] &quot;check 3 4/8&quot;</code></pre>
+<pre><code>## Warning: &#39;dfm.corpus()&#39; is deprecated. Use &#39;tokens()&#39; first.</code></pre>
+<pre><code>## Warning: min_nchar, ngrams arguments are not used.</code></pre>
+<pre><code>## Warning: &#39;...&#39; should not be used for tokens() arguments; use &#39;tokens()&#39; first.</code></pre>
+<pre><code>## Warning: min_nchar, ngrams arguments are not used.
+
+## Warning: min_nchar, ngrams arguments are not used.</code></pre>
+<pre><code>## Warning: &#39;remove&#39; is deprecated; use dfm_remove() instead</code></pre>
+<pre><code>## Warning: &#39;stem&#39; is deprecated; use dfm_wordstem() instead</code></pre>
+<pre><code>## [1] &quot;check 4 4/8&quot;</code></pre>
+<pre><code>## Warning in dfm2stm(x, docvars, omit_empty = TRUE): Dropped 700 empty
+## document(s)</code></pre>
+<pre><code>## [1] &quot;check 5 4/8&quot;</code></pre>
+<pre class="r"><code>pdf(file=&quot;./images/ONLFtopiccomparisions.pdf&quot;)
+plot(alt4$model,
+     type=&quot;summary&quot;,
+     n=5,
+     main=&quot;Comparision of topics for ONLF&quot;,
+     text.cex=.8)</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>############
+## LRA at K=4
+############
+## For Figure Appendix 9(d)
+
+lrak4 &lt;- article.analysis.alt(ged.lra,k=4)</code></pre>
+<pre><code>## [1] 1038   49
+## [1] &quot;check 1 4/8&quot;
+## [1] &quot;check 2 4/8&quot;
+## [1] &quot;check 3 4/8&quot;</code></pre>
+<pre><code>## Warning: &#39;dfm.corpus()&#39; is deprecated. Use &#39;tokens()&#39; first.</code></pre>
+<pre><code>## Warning: min_nchar, ngrams arguments are not used.</code></pre>
+<pre><code>## Warning: &#39;...&#39; should not be used for tokens() arguments; use &#39;tokens()&#39; first.</code></pre>
+<pre><code>## Warning: min_nchar, ngrams arguments are not used.
+
+## Warning: min_nchar, ngrams arguments are not used.</code></pre>
+<pre><code>## Warning: &#39;remove&#39; is deprecated; use dfm_remove() instead</code></pre>
+<pre><code>## Warning: &#39;stem&#39; is deprecated; use dfm_wordstem() instead</code></pre>
+<pre><code>## [1] &quot;check 4 4/8&quot;</code></pre>
+<pre><code>## Warning in dfm2stm(x, docvars, omit_empty = TRUE): Dropped 1,038 empty
+## document(s)</code></pre>
+<pre><code>## [1] &quot;check 5 4/8&quot;</code></pre>
+<pre class="r"><code>pdf(file=&quot;./images/LRAtopiccomparisions.pdf&quot;)
+plot(lrak4$model,
+     type=&quot;summary&quot;,
+     ##labeltype = c(&quot;frex&quot;),
+     n=5,
+     main=&quot;Comparision of topics for LRA&quot;,
+     text.cex=.8)</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>##%%%%%%%%%%%%%%%%%%%
 ## Check PKK around K=5
 ##%%%%%%%%%%%%%%%%%%%
 
@@ -542,7 +609,7 @@ k5.yearsum$propC2 &lt;- (k5.yearsum$countT3 +
 k5.yearsum$Cdiff &lt;- k5.yearsum$propC2+
     k5.yearsum$propC1
 
-#pdf(file=&quot;PKKAlternateK5.pdf&quot;)
+pdf(file=&quot;./images/PKKAlternateK5.pdf&quot;)
 plot(k5.yearsum$Cdiff~k5.yearsum$year,
      main=&quot;PKK-Alternate Topic Proportions&quot;,
      sub=&quot;Clustered Classifications With K-5&quot;,
@@ -554,12 +621,11 @@ plot(k5.yearsum$Cdiff~k5.yearsum$year,
       col=&quot;darkgreen&quot;,
       type=&quot;l&quot;,
       lty=&quot;dashed&quot;)
-abline(h=0, col=&quot;red&quot;)</code></pre>
-<embed src="data:application/pdf;base64,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SytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCjExIDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvTmFtZSAvRjMgL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZAovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAyOTk4IDAwMDAwIG4gCjAwMDAwMDMwODEgMDAwMDAgbiAKMDAwMDAwMzIwNCAwMDAwMCBuIAowMDAwMDAzMjM3IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDA1OTMyIDAwMDAwIG4gCjAwMDAwMDYxODkgMDAwMDAgbiAKMDAwMDAwNjI4NiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDEyIC9JbmZvIDEgMCBSIC9Sb290IDIgMCBSID4+CnN0YXJ0eHJlZgo2Mzg4CiUlRU9GCg==" width="672" type="application/pdf"></embed>
-<pre class="r"><code>#dev.off()
-
-
-#%%%%%%%%%%%%%%%%%%%%
+abline(h=0, col=&quot;red&quot;)
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>#%%%%%%%%%%%%%%%%%%%%
 ### Visualize alternative topic specification for
 ## AQAP
 ##%%%%%%%%%%%%%%%%%%%
@@ -672,7 +738,7 @@ stargazer(aqap3.yearsum[,1:8],
           rownames=FALSE)</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 21:10:22
+## % Date and time: Fri, May 10, 2024 - 11:01:28
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 

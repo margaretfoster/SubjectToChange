@@ -11,7 +11,7 @@
 
 <meta name="author" content="Promachos" />
 
-<meta name="date" content="2024-04-16" />
+<meta name="date" content="2024-05-10" />
 
 <title>RobustnessPanel.R</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">RobustnessPanel.R</h1>
 <h4 class="author">Promachos</h4>
-<h4 class="date">2024-04-16</h4>
+<h4 class="date">2024-05-10</h4>
 
 </div>
 
@@ -382,7 +382,7 @@ library(readxl)
 source(&quot;./00articleModelingRep.R&quot;) 
 source(&quot;./00dominantFramingRep.R&quot;) ## wrapper to summarize yearly STM
 
-dataPath &lt;- &quot;./&quot;
+dataPath &lt;- &quot;./data/&quot;
 outPath &lt;- &quot;./&quot;
 
 ucdp.ged&lt;- read.csv(paste0(dataPath,&quot;ged211.csv&quot;))
@@ -574,7 +574,7 @@ df.yearsumN &lt;- rbind(df.yearsum2,
                      zeros)
 
 
-dim(df.yearsumN) 
+#dim(df.yearsumN) 
 
 ## Convert NAN and NA to zero
 ## NAN are caused by years with no articles
@@ -675,7 +675,7 @@ df.yearsumN[which(abs(df.yearsumN$propdif.L2)&gt;= 2 |
 
 #table(df.yearsumN$delta2_L2) ##196 years in 68 different groups
 
-length(unique(df.yearsumN[which(df.yearsumN$delta2_L2==1),]$groupID)) ##80
+#length(unique(df.yearsumN[which(df.yearsumN$delta2_L2==1),]$groupID)) ##80
 
 #hadgap2L2 &lt;- unique(df.yearsumN[df.yearsumN$delta2_L2==1,]$groupID)
 
@@ -714,7 +714,7 @@ df.yearsumN[which(abs(df.yearsumN$propdiff) &lt;= .5 &amp;
 
 
 ## gap between the topics is less than .5
-table(df.yearsumN$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
+#table(df.yearsumN$gap50)## 10 threshold: 1664  no, 449 yes in 176 groups
 
 #length(unique(df.yearsumN[which(df.yearsumN$gap50==1),]$groupID))
 
@@ -780,7 +780,7 @@ df.basedataN$Th &lt;- Th
 print(&quot;Part 2 finished, data saved&quot;)
 
 ## Prep for termination rep:
-dataPath &lt;- &quot;./&quot;
+dataPath &lt;- &quot;./data/&quot;
 termination &lt;- read_dta(paste0(dataPath,
                                &quot;Termination-data-ISQ.dta&quot;))
 
@@ -800,9 +800,9 @@ t.groups.after1989 &lt;- unique(termination[which(termination$year&gt;=1989),]$s
                        by.y=(&quot;old_id&quot;),
                        all.x=TRUE)
   
-  dim(termination)
+ # dim(termination)
   
-  colnames(termination)
+ # colnames(termination)
   
   ids.yearsum &lt;- unique(df.yearsumN$groupID)
   terminationplus1 &lt;- merge(x=termination,
@@ -846,9 +846,9 @@ t.groups.after1989 &lt;- unique(termination[which(termination$year&gt;=1989),]$s
   haddelta2 &lt;- unique(terminationplus[which(
     terminationplus$delta2==1),]$new_id)
   
-  length(haddelta1) ## 85 groups
-  length(haddelta1.5) ## 51 groups
-  length(haddelta2) ## 27 groups
+  #length(haddelta1) ## 85 groups
+  #length(haddelta1.5) ## 51 groups
+  #length(haddelta2) ## 27 groups
   
   ## Add in the indicator variable for whether
   ## the militant group in a dyad had a change
@@ -870,38 +870,27 @@ t.groups.after1989 &lt;- unique(termination[which(termination$year&gt;=1989),]$s
     group_by(new_id) %&gt;%
     summarise(numchanges=sum(delta1==1))
   
-  summary(numchanges$numchanges) ## 0-4 (78 NA)
-  
-  hist(numchanges$numchanges)
-  
-  p &lt;- ggplot(numchanges,
-              aes(x=numchanges)) +
-    geom_histogram() +
-    xlab(&quot;Number of Frame Change Years&quot;) +
-    ylab(&quot;Count&quot;)+
-    ggtitle(&quot;Summary of Number of Changes Variable&quot;)+
-    theme_bw()
-  
-  p
+  #summary(numchanges$numchanges) ## 0-4 (78 NA)
+
   
   ## Outlier identification:
-  numchanges[which(numchanges$numchanges==4),]##2
-  numchanges[which(numchanges$numchanges==3),] ## 8
+  #numchanges[which(numchanges$numchanges==4),]##2
+  #numchanges[which(numchanges$numchanges==3),] ## 8
   
-  numchanges[which(numchanges$numchanges==2),] ##19
+ # numchanges[which(numchanges$numchanges==2),] ##19
   
   
   ## 4 changes:
-  cols &lt;- c(&quot;sideb&quot;, &quot;frexWords&quot;, &#39;year&#39;)
-  terminationplus[which(terminationplus$new_id==277),cols]## Abu Sayyaf
-  terminationplus[which(terminationplus$new_id==743), cols]##  FARC
+  #cols &lt;- c(&quot;sideb&quot;, &quot;frexWords&quot;, &#39;year&#39;)
+ # terminationplus[which(terminationplus$new_id==277),cols]## Abu Sayyaf
+  #terminationplus[which(terminationplus$new_id==743), cols]##  FARC
   
   ## merge back in:
   terminationplus &lt;- terminationplus %&gt;%
     left_join(numchanges,
               by=&quot;new_id&quot;) 
   
-  dim(terminationplus) ## 1229 x 90
+ # dim(terminationplus) ## 1229 x 90
   
   ##%%%%%%%%%%%%%%%%%%%%%%%%%
   ## summary of max years since change:
@@ -914,26 +903,26 @@ t.groups.after1989 &lt;- unique(termination[which(termination$year&gt;=1989),]$s
   
   ysC &lt;- na.omit(ysC)
   
-  dim(ysC) ##213 x 2
+ # dim(ysC) ##213 x 2
   
-  head(ysC) ## groups with a longest time after change:
+  #head(ysC) ## groups with a longest time after change:
   ## 326 (16 years); 338 (14 years); 551 (12 years); 169 (11 years); 325 (11 years)
   
   ## Some qualitative perspective, if desired:
-  terminationplus[which(terminationplus$new_id==326),
-                  c(cols, &quot;counter&quot;, &quot;delta1&quot;)]## UFLA
+  #terminationplus[which(terminationplus$new_id==326),
+  #                c(cols, &quot;counter&quot;, &quot;delta1&quot;)]## UFLA
   
-  terminationplus[which(terminationplus$new_id==338),
-                  cols]## Republic of Nagorno-Karabakh
+  #terminationplus[which(terminationplus$new_id==338),
+  #                cols]## Republic of Nagorno-Karabakh
   
-  terminationplus[which(terminationplus$new_id==551),
-                  cols]## OLF
+  #terminationplus[which(terminationplus$new_id==551),
+  #                cols]## OLF
   
-  terminationplus[which(terminationplus$new_id==169),
-                  cols]## CPP
+  #terminationplus[which(terminationplus$new_id==169),
+   #               cols]## CPP
   
-  terminationplus[which(terminationplus$new_id==325),
-                  cols]## &quot;Kashmir insurgents&quot;
+  #terminationplus[which(terminationplus$new_id==325),
+   #               cols]## &quot;Kashmir insurgents&quot;
   
   
   ##%%%%%%%%%%%%%%%%%
@@ -1008,7 +997,7 @@ t.groups.after1989 &lt;- unique(termination[which(termination$year&gt;=1989),]$s
   ## clean up the Th less than zero (avoid period in file path)
   if(Th &lt; 1){
     Thm= Th*100}else{Thm=Th}
-  print(Thm)
+  #print(Thm)
   
   write_dta(data=terminationplus,
             paste0(&quot;./data/terminationplus_&quot;,N, &quot;_&quot;, Thm, &quot;.dta&quot;))
@@ -8277,7 +8266,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:11:57
+## % Date and time: Fri, May 10, 2024 - 07:36:04
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -8296,7 +8285,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:11:57
+## % Date and time: Fri, May 10, 2024 - 07:36:04
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -8310,7 +8299,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 1
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 1&quot;
 ## [1] &quot;Finished for N= 1&quot;
@@ -15571,7 +15559,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:34:29
+## % Date and time: Fri, May 10, 2024 - 07:55:18
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -15590,7 +15578,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:34:29
+## % Date and time: Fri, May 10, 2024 - 07:55:18
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -15604,7 +15592,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 90
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.9&quot;
 ## [1] &quot;Finished for N= 1&quot;
@@ -22863,10 +22850,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,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womiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCjExIDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvTmFtZSAvRjMgL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZAovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAwOTU4IDAwMDAwIG4gCjAwMDAwMDEwNDEgMDAwMDAgbiAKMDAwMDAwMTE2NCAwMDAwMCBuIAowMDAwMDAxMTk3IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDAzODkyIDAwMDAwIG4gCjAwMDAwMDQxNDkgMDAwMDAgbiAKMDAwMDAwNDI0NiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDEyIC9JbmZvIDEgMCBSIC9Sb290IDIgMCBSID4+CnN0YXJ0eHJlZgo0MzQ4CiUlRU9GCg==" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:57:46
+## % Date and time: Fri, May 10, 2024 - 08:14:23
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -22885,7 +22871,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 17:57:46
+## % Date and time: Fri, May 10, 2024 - 08:14:23
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -22899,7 +22885,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 75
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.75&quot;
 ## [1] &quot;Finished for N= 1&quot;
@@ -24904,7 +24889,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:12:06
+## % Date and time: Fri, May 10, 2024 - 08:27:00
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -24923,7 +24908,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:12:06
+## % Date and time: Fri, May 10, 2024 - 08:27:00
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -24937,7 +24922,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 1
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 1&quot;
 ## [1] &quot;Finished for N= 5&quot;
@@ -27496,10 +27480,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,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" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:30:13
+## % Date and time: Fri, May 10, 2024 - 08:42:45
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -27518,7 +27501,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:30:13
+## % Date and time: Fri, May 10, 2024 - 08:42:45
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -27532,7 +27515,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 90
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.9&quot;
 ## [1] &quot;Finished for N= 5&quot;
@@ -31354,10 +31336,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,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HIe6Lztd7hmeN3ziivuV01e9r567FnDt0sj8keHrUddv3ki4Ib3Ju/noVvqt57dzbs/cWXMXfbfkntK9ivua9xt+NP2xXeogPT7qPTrwYMGDO2PcsSc/Zf/0frzoIflhxYTORPMj20fHJn0nLz9e+Hj8SdaTmafFPyv/XPvM5Nl3v3j8MjAVOzX+XPT806+bX6i/2P/S7mXvdNj0/VcZr2Zel7xRf3PgLett/7uYdxMzue+x7ys/mH7o+Rj08e6njE+ffgP3hPP7ZW5kc3RyZWFtCmVuZG9iago5IDAgb2JqCjw8Ci9UeXBlIC9FbmNvZGluZyAvQmFzZUVuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0RpZmZlcmVuY2VzIFsgNDUvbWludXMgOTYvcXVvdGVsZWZ0CjE0NC9kb3RsZXNzaSAvZ3JhdmUgL2FjdXRlIC9jaXJjdW1mbGV4IC90aWxkZSAvbWFjcm9uIC9icmV2ZSAvZG90YWNjZW50Ci9kaWVyZXNpcyAvLm5vdGRlZiAvcmluZyAvY2VkaWxsYSAvLm5vdGRlZiAvaHVuZ2FydW1sYXV0IC9vZ29uZWsgL2Nhcm9uIC9zcGFjZV0KPj4KZW5kb2JqCjEwIDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvTmFtZSAvRjIgL0Jhc2VGb250IC9IZWx2ZXRpY2EKL0VuY29kaW5nIDkgMCBSID4+CmVuZG9iagoxMSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL05hbWUgL0YzIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL0VuY29kaW5nIDkgMCBSID4+CmVuZG9iagp4cmVmCjAgMTIKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDIxIDAwMDAwIG4gCjAwMDAwMDAxNjMgMDAwMDAgbiAKMDAwMDAwMDg4NCAwMDAwMCBuIAowMDAwMDAwOTY3IDAwMDAwIG4gCjAwMDAwMDEwOTAgMDAwMDAgbiAKMDAwMDAwMTEyMyAwMDAwMCBuIAowMDAwMDAwMjEyIDAwMDAwIG4gCjAwMDAwMDAyOTIgMDAwMDAgbiAKMDAwMDAwMzgxOCAwMDAwMCBuIAowMDAwMDA0MDc1IDAwMDAwIG4gCjAwMDAwMDQxNzIgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMiAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNDI3NAolJUVPRgo=" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:49:58
+## % Date and time: Fri, May 10, 2024 - 09:00:11
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -31376,7 +31357,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 18:49:58
+## % Date and time: Fri, May 10, 2024 - 09:00:11
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -31390,7 +31371,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 75
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.75&quot;
 ## [1] &quot;Finished for N= 5&quot;
@@ -33530,10 +33510,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,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" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:01:13
+## % Date and time: Fri, May 10, 2024 - 09:10:09
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -33552,7 +33531,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:01:13
+## % Date and time: Fri, May 10, 2024 - 09:10:09
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -33566,7 +33545,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 1
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 1&quot;
 ## [1] &quot;Finished for N= 10&quot;
@@ -36285,10 +36263,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,JVBERi0xLjQKJYHigeOBz4HTXHIKMSAwIG9iago8PAovQ3JlYXRpb25EYXRlIChEOjIwMjQwNDE2MTkzOTMxKQovTW9kRGF0ZSAoRDoyMDI0MDQxNjE5MzkzMSkKL1RpdGxlIChSIEdyYXBoaWNzIE91dHB1dCkKL1Byb2R1Y2VyIChSIDQuMy4zKQovQ3JlYXRvciAoUikKPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL0NhdGFsb2cgL1BhZ2VzIDMgMCBSID4+CmVuZG9iago3IDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMyAwIFIgL0NvbnRlbnRzIDggMCBSIC9SZXNvdXJjZXMgNCAwIFIgPj4KZW5kb2JqCjggMCBvYmoKPDwKL0xlbmd0aCA1NDEgL0ZpbHRlciAvRmxhdGVEZWNvZGUKPj4Kc3RyZWFtCnicpVU9b9swEN35K27oYA9hyCMp0quDuoWBFkgtIEOQIXCctEatwFaDov++Jx2tnAXXtZLBNJ/euy8edbIwBwtr2Kpr2EKYaOMhOu09eOt1RECMOiDsVnADVSNS01Jd1t8+TWFZK6ONMSDXelmpy5kjp+UjkItM8MLYOqttAodB+wDlBm5Hn3/Uv56fdvcbeH6EagzWwOhls+TN9/vqaQwXzXZVfzjJju+gnKuPZZvkDHMW2MuixXbitU9gU1Nlm8Sr58bnQSh+cNS7cHkhItF2UoANSaeicT+a7Vbbl1W1/DOGct04ac6SD/JqceQgF1df6WkM8Fvd3oGBB2VhTr+1sm2ALypSASZ3awOeQnXwJ8CixzMqCo2Zti5JPkMhQINSkKEU0F4KGAqBc0YKMpSCyUGOGQrBQVVdkUJwzm08eQ/IlynAt7e86RNR+w6dcYmoop51GGBN5R5Y2yGxkc6iZz0gtkM8tMYhsV0q+tYDYvvQOzX3GptHULI6Reo3I0zk3nC/ezz975GgraM4ruMzlALySCOoEzAUAiQT5ztBhlLAOXUCkeIZ08FbHQuISQfH1+bY4Z20tTQ9XeC+v8E6Bh0sd264NVLsInLn3mBNsROX7Y0Yhv//+ogXPWEEubYv+vuHKd+kov1MIVFU5W6lYLoflpKnMmgIMZ1no6Rbv5nlwSjZoA1mNk/Ff9jmkSjZJmWX6Wv1FyqwlMZlbmRzdHJlYW0KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFsgNyAwIFIgXSAvQ291bnQgMSAvTWVkaWFCb3ggWzAgMCA1MDQgMzYwXSA+PgplbmRvYmoKNCAwIG9iago8PAovUHJvY1NldCBbL1BERiAvVGV4dF0KL0ZvbnQgPDwvRjIgMTAgMCBSIC9GMyAxMSAwIFIgPj4KL0V4dEdTdGF0ZSA8PCA+PgovQ29sb3JTcGFjZSA8PCAvc1JHQiA1IDAgUiA+Pgo+PgplbmRvYmoKNSAwIG9iagpbL0lDQ0Jhc2VkIDYgMCBSXQplbmRvYmoKNiAwIG9iago8PCAvQWx0ZXJuYXRlIC9EZXZpY2VSR0IgL04gMyAvTGVuZ3RoIDI1OTYgL0ZpbHRlciAvRmxhdGVEZWNvZGUgPj4Kc3RyZWFtCnicnZZ3VFPZFofPvTe9UJIQipTQa2hSAkgNvUiRLioxCRBKwJAAIjZEVHBEUZGmCDIo4ICjQ5GxIoqFAVGx6wQZRNRxcBQblklkrRnfvHnvzZvfH/d+a5+9z91n733WugCQ/IMFwkxYCYAMoVgU4efFiI2LZ2AHAQzwAANsAOBws7NCFvhGApkCfNiMbJkT+Be9ug4g+fsq0z+MwQD/n5S5WSIxAFCYjOfy+NlcGRfJOD1XnCW3T8mYtjRNzjBKziJZgjJWk3PyLFt89pllDznzMoQ8GctzzuJl8OTcJ+ONORK+jJFgGRfnCPi5Mr4mY4N0SYZAxm/ksRl8TjYAKJLcLuZzU2RsLWOSKDKCLeN5AOBIyV/w0i9YzM8Tyw/FzsxaLhIkp4gZJlxTho2TE4vhz89N54vFzDAON40j4jHYmRlZHOFyAGbP/FkUeW0ZsiI72Dg5ODBtLW2+KNR/Xfybkvd2ll6Ef+4ZRB/4w/ZXfpkNALCmZbXZ+odtaRUAXesBULv9h81gLwCKsr51Dn1xHrp8XlLE4ixnK6vc3FxLAZ9rKS/o7/qfDn9DX3zPUr7d7+VhePOTOJJ0MUNeN25meqZExMjO4nD5DOafh/gfB/51HhYR/CS+iC+URUTLpkwgTJa1W8gTiAWZQoZA+J+a+A/D/qTZuZaJ2vgR0JZYAqUhGkB+HgAoKhEgCXtkK9DvfQvGRwP5zYvRmZid+8+C/n1XuEz+yBYkf45jR0QyuBJRzuya/FoCNCAARUAD6kAb6AMTwAS2wBG4AA/gAwJBKIgEcWAx4IIUkAFEIBcUgLWgGJSCrWAnqAZ1oBE0gzZwGHSBY+A0OAcugctgBNwBUjAOnoAp8ArMQBCEhcgQFVKHdCBDyByyhViQG+QDBUMRUByUCCVDQkgCFUDroFKoHKqG6qFm6FvoKHQaugANQ7egUWgS+hV6ByMwCabBWrARbAWzYE84CI6EF8HJ8DI4Hy6Ct8CVcAN8EO6ET8OX4BFYCj+BpxGAEBE6ooswERbCRkKReCQJESGrkBKkAmlA2pAepB+5ikiRp8hbFAZFRTFQTJQLyh8VheKilqFWoTajqlEHUJ2oPtRV1ChqCvURTUZros3RzugAdCw6GZ2LLkZXoJvQHeiz6BH0OPoVBoOhY4wxjhh/TBwmFbMCsxmzG9OOOYUZxoxhprFYrDrWHOuKDcVysGJsMbYKexB7EnsFO459gyPidHC2OF9cPE6IK8RV4FpwJ3BXcBO4GbwS3hDvjA/F8/DL8WX4RnwPfgg/jp8hKBOMCa6ESEIqYS2hktBGOEu4S3hBJBL1iE7EcKKAuIZYSTxEPE8cJb4lUUhmJDYpgSQhbSHtJ50i3SK9IJPJRmQPcjxZTN5CbiafId8nv1GgKlgqBCjwFFYr1Ch0KlxReKaIVzRU9FRcrJivWKF4RHFI8akSXslIia3EUVqlVKN0VOmG0rQyVdlGOVQ5Q3mzcovyBeVHFCzFiOJD4VGKKPsoZyhjVISqT2VTudR11EbqWeo4DUMzpgXQUmmltG9og7QpFYqKnUq0Sp5KjcpxFSkdoRvRA+jp9DL6Yfp1+jtVLVVPVb7qJtU21Suqr9XmqHmo8dVK1NrVRtTeqTPUfdTT1Lepd6nf00BpmGmEa+Rq7NE4q/F0Dm2OyxzunJI5h+fc1oQ1zTQjNFdo7tMc0JzW0tby08rSqtI6o/VUm67toZ2qvUP7hPakDlXHTUegs0PnpM5jhgrDk5HOqGT0MaZ0NXX9dSW69bqDujN6xnpReoV67Xr39An6LP0k/R36vfpTBjoGIQYFBq0Gtw3xhizDFMNdhv2Gr42MjWKMNhh1GT0yVjMOMM43bjW+a0I2cTdZZtJgcs0UY8oyTTPdbXrZDDazN0sxqzEbMofNHcwF5rvNhy3QFk4WQosGixtMEtOTmcNsZY5a0i2DLQstuyyfWRlYxVtts+q3+mhtb51u3Wh9x4ZiE2hTaNNj86utmS3Xtsb22lzyXN+5q+d2z31uZ27Ht9tjd9Oeah9iv8G+1/6Dg6ODyKHNYdLRwDHRsdbxBovGCmNtZp13Qjt5Oa12Oub01tnBWex82PkXF6ZLmkuLy6N5xvP48xrnjbnquXJc612lbgy3RLe9blJ3XXeOe4P7Aw99D55Hk8eEp6lnqudBz2de1l4irw6v12xn9kr2KW/E28+7xHvQh+IT5VPtc99XzzfZt9V3ys/eb4XfKX+0f5D/Nv8bAVoB3IDmgKlAx8CVgX1BpKAFQdVBD4LNgkXBPSFwSGDI9pC78w3nC+d3hYLQgNDtoffCjMOWhX0fjgkPC68JfxhhE1EQ0b+AumDJgpYFryK9Issi70SZREmieqMVoxOim6Nfx3jHlMdIY61iV8ZeitOIE8R1x2Pjo+Ob4qcX+izcuXA8wT6hOOH6IuNFeYsuLNZYnL74+BLFJZwlRxLRiTGJLYnvOaGcBs700oCltUunuGzuLu4TngdvB2+S78ov508kuSaVJz1Kdk3enjyZ4p5SkfJUwBZUC56n+qfWpb5OC03bn/YpPSa9PQOXkZhxVEgRpgn7MrUz8zKHs8yzirOky5yX7Vw2JQoSNWVD2Yuyu8U02c/UgMREsl4ymuOWU5PzJjc690iecp4wb2C52fJNyyfyffO/XoFawV3RW6BbsLZgdKXnyvpV0Kqlq3pX668uWj2+xm/NgbWEtWlrfyi0LiwvfLkuZl1PkVbRmqKx9X7rW4sVikXFNza4bKjbiNoo2Di4ae6mqk0fS3glF0utSytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCjExIDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvTmFtZSAvRjMgL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZAovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAwOTA0IDAwMDAwIG4gCjAwMDAwMDA5ODcgMDAwMDAgbiAKMDAwMDAwMTExMCAwMDAwMCBuIAowMDAwMDAxMTQzIDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDAzODM4IDAwMDAwIG4gCjAwMDAwMDQwOTUgMDAwMDAgbiAKMDAwMDAwNDE5MiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDEyIC9JbmZvIDEgMCBSIC9Sb290IDIgMCBSID4+CnN0YXJ0eHJlZgo0Mjk0CiUlRU9GCg==" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:19:47
+## % Date and time: Fri, May 10, 2024 - 09:25:24
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -36307,7 +36284,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:19:47
+## % Date and time: Fri, May 10, 2024 - 09:25:24
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -36321,7 +36298,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 90
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.9&quot;
 ## [1] &quot;Finished for N= 10&quot;
@@ -40586,11 +40562,9 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<embed src="data:application/pdf;base64,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hxyHui87Xe4Znjd84or7ldNXva+euxZw7dLI/JHh61HXb95IuCG9ybv56Fb6ree3c27P3FlzF3235J7SvYr7mvcbfjT9sV3qID0+6j068GDBgztj3LEnP2X/9H686CH5YcWEzkTzI9tHxyZ9Jy8/Xvh4/EnWk5mnxT8r/1z7zOTZd794/DIwFTs1/lz0/NOvm1+ov9j/0u5l73TY9P1XGa9mXpe8UX9z4C3rbf+7mHcTM7nvse8rP5h+6PkY9PHup4xPn34D94Tz+2VuZHN0cmVhbQplbmRvYmoKOSAwIG9iago8PAovVHlwZSAvRW5jb2RpbmcgL0Jhc2VFbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9EaWZmZXJlbmNlcyBbIDQ1L21pbnVzIDk2L3F1b3RlbGVmdAoxNDQvZG90bGVzc2kgL2dyYXZlIC9hY3V0ZSAvY2lyY3VtZmxleCAvdGlsZGUgL21hY3JvbiAvYnJldmUgL2RvdGFjY2VudAovZGllcmVzaXMgLy5ub3RkZWYgL3JpbmcgL2NlZGlsbGEgLy5ub3RkZWYgL2h1bmdhcnVtbGF1dCAvb2dvbmVrIC9jYXJvbiAvc3BhY2VdCj4+CmVuZG9iagoxMCAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL05hbWUgL0YyIC9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyA5IDAgUiA+PgplbmRvYmoKMTEgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMyAvQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkCi9FbmNvZGluZyA5IDAgUiA+PgplbmRvYmoKeHJlZgowIDEyCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAyMSAwMDAwMCBuIAowMDAwMDAwMTYzIDAwMDAwIG4gCjAwMDAwMDA4ODUgMDAwMDAgbiAKMDAwMDAwMDk2OCAwMDAwMCBuIAowMDAwMDAxMDkxIDAwMDAwIG4gCjAwMDAwMDExMjQgMDAwMDAgbiAKMDAwMDAwMDIxMiAwMDAwMCBuIAowMDAwMDAwMjkyIDAwMDAwIG4gCjAwMDAwMDM4MTkgMDAwMDAgbiAKMDAwMDAwNDA3NiAwMDAwMCBuIAowMDAwMDA0MTczIDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgMTIgL0luZm8gMSAwIFIgL1Jvb3QgMiAwIFIgPj4Kc3RhcnR4cmVmCjQyNzUKJSVFT0YK" width="672" type="application/pdf"></embed>
-<embed src="data:application/pdf;base64,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" width="672" type="application/pdf"></embed>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:39:29
+## % Date and time: Fri, May 10, 2024 - 09:42:26
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -40609,7 +40583,7 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \end{table} 
 ## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 19:39:29
+## % Date and time: Fri, May 10, 2024 - 09:42:26
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -40623,7 +40597,6 @@ print(paste0(&quot;Finished for N= &quot;, N))
 ## \hline \\[-1.8ex] 
 ## \end{tabular} 
 ## \end{table} 
-## [1] 75
 ## [1] &quot;Part 3 done, ready for STATA&quot;
 ## [1] &quot;Finished for Th= 0.75&quot;
 ## [1] &quot;Finished for N= 10&quot;</code></pre>

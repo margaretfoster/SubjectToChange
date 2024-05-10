@@ -7,9 +7,20 @@
 
 ## Load packages to clean and work with data
 ## Expects:
+
+#groundhog_day <- "2024-02-01" ##
+#groundhog.library(c("quanteda", "ggplot2",
+ #                   'tidyverse', 'readxl'),
+  #                groundhog_day,
+   #               ignore.deps = c("MASS", "Matrix", "RcppArmadillo", 
+     #                             "fastmatch", "RcppParallel",
+    #                              "SnowballC", "stopwords", 
+     #                             'Rcpp', 'ISOcodes'),
+      #            tolerate.R.version='4.3.3')
+
 #library(ggplot2) ## ggplot2_3.4.4
 #library(tidyverse) ## V 1.3.1
-#library(readxl) ## readxl_1.4.0
+library(readxl) ## readxl_1.4.0
 #library(quanteda) ## version 3.0.0
 
 source("./00articleModelingRep.R") ## 4/22: this is the version that replicates the findings.
@@ -23,7 +34,7 @@ source("./00dominantFramingRep.R") ## wrapper to summarize yearly STM
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath <- "./"
+dataPath <- "./data/"
 outPath <- "./"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Promachos" />
 
-<meta name="date" content="2024-04-16" />
+<meta name="date" content="2024-05-10" />
 
 <title>04nsPrepTerminationRep.R</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">04nsPrepTerminationRep.R</h1>
 <h4 class="author">Promachos</h4>
-<h4 class="date">2024-04-16</h4>
+<h4 class="date">2024-05-10</h4>
 
 </div>
 
@@ -367,7 +367,7 @@ groundhog_day &lt;- &quot;2024-02-01&quot; ##
 groundhog.library(c(&quot;tidyverse&quot;, &quot;haven&quot;, &quot;dplyr&quot;),
                   groundhog_day)</code></pre>
 <pre><code>## [36mAll requested packages are already attached[0m</code></pre>
-<pre class="r"><code>dataPath &lt;- &quot;./&quot;
+<pre class="r"><code>dataPath &lt;- &quot;./data/&quot;
 
 termination &lt;- read_dta(paste0(dataPath,
                                &quot;Termination-data-ISQ.dta&quot;))
@@ -756,7 +756,7 @@ colnames(df) &lt;- c(&quot;Variable&quot;, &quot;No&quot;, &quot;Yes&quot;)
 stargazer(df, summary=FALSE, rownames=FALSE)</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 16:48:29
+## % Date and time: Fri, May 10, 2024 - 07:16:44
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -783,7 +783,7 @@ stargazer(sum.df,
               ))</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-## % Date and time: Tue, Apr 16, 2024 - 16:48:29
+## % Date and time: Fri, May 10, 2024 - 07:16:44
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 
@@ -1033,8 +1033,8 @@ corrplot(corrmod2,
          addrect=2,
          mar=c(1,1,1,1))</code></pre>
 <pre class="r"><code>dev.off()</code></pre>
-<pre><code>## pdf 
-##   2</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code>##save(terminationplus, termination,
 ##     file=&quot;terminationPlusforRep.Rdata&quot;)
 

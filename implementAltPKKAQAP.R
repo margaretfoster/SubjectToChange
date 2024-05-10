@@ -16,7 +16,7 @@ source("articleModelingAlt.R") ## wrapper for text prep + model with K as a para
 ### 2020 UCDP; good underlying base to
 ## try out strategies for measuring change
 
-dataPath <- "./"
+dataPath <- "./data/"
 
 ucdp.ged<- read.csv(paste0(dataPath,"ged211.csv"))
 
@@ -73,6 +73,44 @@ ged.onlf <-ged.tiny[which(ged.tiny$side_b_dset_id==497),]
 ged.as <-ged.tiny[which(ged.tiny$side_b_dset_id==277),]
 ged.ulfa <-ged.tiny[which(ged.tiny$side_b_dset_id==326),]
 ##ged.unita <-ged.tiny[which(ged.tiny$side_b_dset_id==),]
+
+
+## Figure Appendix 9(b): ONLF at K=4
+## ONLF at:
+## K=4 [Alternate spec]
+## run it through article analysis alt, then do the processing
+## so that I don't have to spend too much time building a very flexible
+## script to scale up and down
+
+alt4 <- article.analysis.alt(ged.onlf,
+                             k=4)
+
+pdf(file="./images/ONLFtopiccomparisions.pdf")
+plot(alt4$model,
+     type="summary",
+     n=5,
+     main="Comparision of topics for ONLF",
+     text.cex=.8)
+dev.off()
+
+
+############
+## LRA at K=4
+############
+## For Figure Appendix 9(d)
+
+lrak4 <- article.analysis.alt(ged.lra,k=4)
+
+pdf(file="./images/LRAtopiccomparisions.pdf")
+plot(lrak4$model,
+     type="summary",
+     ##labeltype = c("frex"),
+     n=5,
+     main="Comparision of topics for LRA",
+     text.cex=.8)
+dev.off()
+
+
 
 ##%%%%%%%%%%%%%%%%%%%
 ## Check PKK around K=5
@@ -168,7 +206,7 @@ k5.yearsum$propC2 <- (k5.yearsum$countT3 +
 k5.yearsum$Cdiff <- k5.yearsum$propC2+
     k5.yearsum$propC1
 
-#pdf(file="PKKAlternateK5.pdf")
+pdf(file="./images/PKKAlternateK5.pdf")
 plot(k5.yearsum$Cdiff~k5.yearsum$year,
      main="PKK-Alternate Topic Proportions",
      sub="Clustered Classifications With K-5",
@@ -181,8 +219,7 @@ lines(k5.yearsum$Cdiff~k5.yearsum$year,
       type="l",
       lty="dashed")
 abline(h=0, col="red")
-#dev.off()
-
+dev.off()
 
 #%%%%%%%%%%%%%%%%%%%%
 ### Visualize alternative topic specification for

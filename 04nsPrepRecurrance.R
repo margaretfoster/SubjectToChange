@@ -13,7 +13,7 @@ groundhog_day <- "2024-02-01" ##
 groundhog.library(c("tidyverse", "haven", "dplyr"),
                   groundhog_day)
 
-dataPath <- "./"
+dataPath <- "./data/"
 
 ## Recurrence base data
 recurrence <- read_dta(paste0(dataPath,

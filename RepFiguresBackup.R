@@ -1,0 +1,1152 @@
+---
+  title: "Replication Log for Foster (2023) Subject to Change"
+author: "Margaret J. Foster"
+date: "`r Sys.Date()`"
+output: html_document
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+```
+
+## Introduction
+
+This document produces a replication log for the tables and figures made in R for Subject to Change: Quantifying Transformation in Armed Conflict Actors At Scale Using Text. STATA-produced tables are featured in accompanying scripts.
+
+These results are generated from an R data file that was produced as part of the research, 01measurementScaleUpInProgressTiny55.Rdata.
+Replication code to produce the data can be found in the "01measurementFullDataTinyThreshRep.R" R script. 
+Another data file, 02dfyearsumAndRelatedTinyUpdate.Rdata, is produced by "02tinyThreshTransformVarRep.R" in the replication package.
+
+
+## Ridge plots 
+
+Manuscript and Appendix Figure 1
+```{r packages, echo=FALSE}
+rm(list=ls())
+
+library("groundhog")
+
+packs <- c("ggplot2", "ggridges", "readxl", 
+           "stargazer", 'tidyverse',
+           "stringi", "dplyr")
+
+loadPkg=function(toLoad){
+  for(lib in toLoad){
+    if(! lib %in% installed.packages()[,1])
+    { install.packages(lib, repos='http://cran.rstudio.com/') }
+    suppressMessages( library(lib, character.only=TRUE) ) }}
+
+## load packages to clean and work with data
+loadPkg(c(packs))
+
+```
+
+```{r data-first-figs, echo=FALSE}
+
+outPath <- "./"
+
+load(file=paste0(outPath,
+                 "02dfyearsumAndRelatedTinyUpdate.Rdata"))
+
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%
+### Data + Summary Stats
+## Subset with a minimum threshold of 10 events (and 10 words to model)
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+### Plot summaries of number of violent events
+## Associated with each group
+## Table of the data:
+
+freqs <- as.data.frame(table(df.basedata$side_b_new_id))
+
+## Add names:
+freqs <- merge(x=freqs,
+               y=unique(df.basedata[,
+                                    c("side_b_new_id", "side_b")]),
+               by.y="side_b_new_id",
+               by.x="Var1",
+               all.x=TRUE)
+
+freqs <- freqs[order(freqs$Freq),]
+
+freqs$quartile <- NA
+freqs[which(freqs$Freq <= 25), "quartile"] <- "First"
+freqs[which(freqs$Freq > 25 &
+              freqs$Freq <= 75), "quartile"] <- "Second"
+freqs[which(freqs$Freq > 75 &
+              freqs$Freq <= 219), "quartile"] <- "Third"
+freqs[which(freqs$Freq > 219), "quartile"] <- "Fourth"
+
+## Min: 10, max 60814;
+## Median: 75
+## Merge the quartile variable back into the basedata:
+## and yearly data
+
+df.basedata <- merge(x=df.basedata,
+                     y=freqs,
+                     by.x= c("side_b_new_id", "side_b"),
+                     by.y=c("Var1", "side_b"))
+
+df.yearsum2 <- merge(x=df.yearsum,
+                     y=freqs,
+                     by.x= c("groupID"),
+                     by.y=c("Var1"))
+
+## Change name for readability
+colnames(df.basedata)[which(
+  colnames(df.basedata)=="Freq")] <- "GroupNumEvents"
+
+## Graph the length of the news articles.
+## Want to check for systematic differences across
+## the set of groups. In this case, ruling out difference
+##  by activity level:
+
+df.basedata$nwords <- stringi::stri_count_words(
+  df.basedata$source_article)
+
+##%%%%%%%%%%%%%
+## Appendix Figure One
+##%%%%%%%%%%%%%%%
+##
+df.basedata$quartile <- as.factor(df.basedata$quartile)
+df.basedata$quartile <- factor(df.basedata$quartile,
+                               levels = c("First", "Second",
+                                          "Third", "Fourth"))
+
+df.basedata$side_b[grep(as.character(df.basedata$side_b),
+                        pattern="Consolidation")] <- "Military Junta CDPJ"
+
+
+########################
+## Make an overview of groups that change
+## and "oscillating" groups, so that you can
+## cross-reference these groups with UCDP encyclopedia
+
+## want to count propdiff L1 and tally the number that are:
+## (a) greater than = |1|
+## (b) Between |1| and |1.5|
+## (c) between |1.5| and |2|
+## (d) equal to |2|
+
+
+df.yearsum.plot <- df.yearsum2 %>%
+  filter(!is.na(propdif.L1))
+
+df.yearsum.plot$quartile <- factor(df.yearsum.plot$quartile,
+                                   levels = c("First", "Second",
+                                              "Third", "Fourth"))
+
+## subset to groups with more than 5 articles modeled:
+active.year.freqs <-  as.data.frame(table(
+  df.yearsum.plot$groupID))
+
+active.year.freqs <- active.year.freqs[order(
+  active.year.freqs$Freq),]
+
+freqs.g3 <- active.year.freqs[which(
+  active.year.freqs$Freq >= 3),]
+
+freqs.g5 <- active.year.freqs[which(
+  active.year.freqs$Freq >= 5),]
+
+df.yearsum.plot$side_b[grep(
+  as.character(df.yearsum.plot$side_b),
+  pattern="Consolidation")] <- "Military Junta CDPJ"
+
+## Three active-year threshold
+ggdata <- df.yearsum.plot[which(df.yearsum.plot$groupID
+                                %in% freqs.g3$Var1),]
+
+####################
+## Manuscript Figure One:
+######################
+
+gch <- ggplot(ggdata,
+              aes(x=propdif.L1,
+                  y=side_b,
+                  group = side_b)) +
+  geom_density_ridges2()+
+  scale_y_discrete(limits=rev)+
+  labs(x= "Distribution of Yearly Proportion Changes",
+       y="Actor")+
+  ggtitle(label="Overview of Yearly Proportion Changes",
+          subtitle="Grouped By Quartiles of Activity Level")+
+  theme_bw()+
+  facet_wrap(~quartile, scales="free")+
+  theme(axis.text.y=element_text(size=3))
+
+gch ## Manuscript Figure One
+
+####
+## Appendix Figure One
+##
+gr <- ggplot(df.basedata,
+             aes(x=nwords,
+                 y=side_b,
+                 group = side_b)) +
+  geom_density_ridges2()+
+  scale_x_log10() +
+  scale_y_discrete(limits=rev)+
+  labs(x= "Distribution of Words in Source Articles",
+       y="UCDP Actor")+
+  ggtitle(label="Distribution of Article Lengths",
+          subtitle="Grouped By Quartiles of Activity Level")+
+  theme_bw()+
+  facet_wrap(~quartile, scales="free")+
+  theme(axis.text.y=element_text(size=3))
+
+gr ## Appendix Figure One
+##ggsave(gr,
+##       file="./figures/distArticleLengthsTiny.pdf")
+
+```
+
+## Manuscript Figure 2  and Appendix Figures 11 and 12
+The following code prepares the data generated by the Subject To Change measurement for replication of Nilsson and Svensson (2021).
+
+
+The code chunk also produces:
+  - Appendix Figure 11, the correlation plot heatmap for change and ambiguity variables.
+- Manuscript Figure 2 and Appendix Figure 12, which are summaries of the distribution of the new change variables.
+
+```{r repdata, echo=FALSE}
+
+rm(list=ls())
+
+library(tidyverse)
+library(haven)
+library(dplyr)
+library(corrplot)
+library(stargazer)
+
+dataPath <- "./data/"
+
+## Read in Nilsson and Svenson's data:
+termination <- read_dta(paste0(dataPath,
+                               "Termination-data-ISQ.dta"))
+
+changes <- load("./02dfyearsumAndRelatedTinyUpdate.Rdata")
+
+idkey <- read_csv(paste0(dataPath,"translate_actor.csv"))
+
+## Add the new/old ID key:
+t.groups.after1989 <- unique(termination[which(
+  termination$year>=1989),]$sidebid)
+
+c.groups <- unique(df.yearsum$groupID)
+
+## Match group IDs:. 
+## Nilsson and Svensson based their work on:
+## UCDP Conflict Termination Dataset version 2–2015, which is before
+## UCDP changed the id numbering scheme.
+
+termination$sidebid <- as.numeric(termination$sidebid)
+ids.termination <- unique(termination$sidebid)
+
+termination <- merge(termination,
+                     idkey,
+                     by.x=("sidebid"),
+                     by.y=("old_id"),
+                     all.x=TRUE)
+
+ids.yearsum <- unique(df.yearsum$groupID)
+terminationplus1 <- merge(x=termination,
+                          y=df.yearsum,
+                          by.x=c("new_id", "year"),
+                          by.y=c("groupID", "year"),
+                          all.x=TRUE)
+
+## Terminationplus1 is more or less their original data
+## limit to 1989 and later
+
+terminationplus <- terminationplus1[which(
+  terminationplus1$year>=1989),]
+
+## Identify the armed groups that had a change of
+## 1, 1.5 and greater than 2:
+
+haddelta1 <- unique(terminationplus[which(
+  terminationplus$delta1==1),]$new_id)
+
+haddelta1.5 <- unique(terminationplus[which(
+  terminationplus$delta1.5==1),]$new_id)
+
+haddelta2 <- unique(terminationplus[which(
+  terminationplus$delta2==1),]$new_id)
+
+## Add in the indicator variable for whether
+## the militant group in a dyad had a change
+## In any year:
+
+terminationplus$haddelta1 <- 0
+terminationplus$haddelta1 <- ifelse(terminationplus$new_id
+                                    %in% haddelta1, 1, 0)
+
+terminationplus$haddelta1.5 <- 0
+terminationplus$haddelta1.5 <- ifelse(terminationplus$new_id
+                                      %in% haddelta1.5, 1, 0)
+terminationplus$haddelta2 <- 0
+terminationplus$haddelta2 <- ifelse(terminationplus$new_id
+                                    %in% haddelta2, 1, 0)
+
+numchanges<- terminationplus %>%
+  group_by(new_id) %>%
+  summarise(numchanges=sum(delta1==1))
+
+## merge back in:
+terminationplus <- terminationplus %>%
+  left_join(numchanges,
+            by="new_id") 
+
+##%%%%%%%%%%%%%%%%%
+## Summary statistics
+## For change and also for the introduced variables
+##%%%%%%%%%%%%%%%%%%
+## number of changes
+## Count variable
+
+## format a small DF to report summary statistics:
+## for the binary variables:
+
+binaries <- c("Change year",
+              "Change in Prev. 2 years",
+              "Had 'Low' Change",
+              "Had 'Med.' Change",
+              "Had 'High' Change")
+
+df <- as.data.frame(cbind(binaries,
+                          rbind(table(terminationplus$delta1),
+                                table(terminationplus$delta1_L2),
+                                table(terminationplus$haddelta1),
+                                table(terminationplus$haddelta1.5),
+                                table(terminationplus$haddelta2))))
+
+print(table(terminationplus$delta1))
+table(terminationplus$delta1_L2)
+
+
+## Article Figure 2:
+#colnames(df) <- c("Variable", "No", "Yes")
+stargazer(df, summary=FALSE, rownames=FALSE)
+
+
+sum.df <- terminationplus[,c("numchanges","counter")]
+
+## Appendix Figure 12:
+stargazer(sum.df,
+          covariate.labels =c("Number of Changes",
+                              "Years Since Change"
+          ))
+
+##%%%%%%%%%%%%%%%%%%%%%
+## Save and format for STATA
+## (aka: remove periods from the column names)
+
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="propdif.L1")] <- "propdif_L1"
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="propdif.L2")] <- "propdif_L2"
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="altpropdif.L1")] <- "altpropdif_L1"
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="altpropdiff.L1")] <- "altpropdiff_L1"
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="delta1.5")] <-"delta15"
+colnames(terminationplus)[which(
+  colnames(terminationplus)=="haddelta1.5")] <-"haddelta15"
+
+## Pass out data
+##write_dta(data=terminationplus,
+##          "./terminationplus.dta")
+
+##%%%%%%%%%%%%%%%%%%%%%%%
+## Make correlation plots:
+##%%%%%%%%%%%%%%%%%%%%%%
+
+tocompare <- c("haddelta1",
+               "haddelta1_5",
+               "haddelta2",
+               "transstart", ## 169 NA
+               "islamist", "muslimid",
+               "rebextpartdummy", ## 182 NA
+               "strongstart", ##92 NA
+               "forinvstart",
+               "muslimajstart",
+               "oilstart", ## 37 NA
+               "duration" ,
+               "lngdppc", ## 33 NA
+               "lnpop",## 33 NA
+               "youthstartap", ##112 NA
+               "foreignfighter",
+               "number_group",
+               "secsup_govgov", ## 102 NA
+               "anostart" , ## 96 na
+               "anocracy", ## 39 NA
+               "rebv",
+               "lowcease",
+               "territory" ,
+               "pa", "ca","govv",
+               ## "outcome",  ## 800 plus NA, distorts data avali.
+               "intensitylevel")
+
+term.mod.vars <- c("term",# ""Termination"
+                   "islamist",# "Islamist claim"
+                   "haddelta1",# "Had Change |1|"
+                   "haddelta15",# "Had Change |1.5|"
+                   "haddelta2",# "Had Change |2|"
+                   "territory",# "Territory"
+                   "duration",# "Duration"
+                   "intensitylevel",# "War"
+                   "number_group",# "Number of groups"
+                   "strongstart",# "Strong rebels"
+                   "anostart",# "Anocracy"
+                   "lngdppcstart",# "GDP per capita"
+                   "lnpopstart",# "Population"
+                   "muslimajstart",# "Muslim majority"
+                   "oilstart",# "Oil"
+                   "youthstartap",# "Youth bulge/adult pop."
+                   "anocracy",# "Anocracy over time"
+                   "lngdppc",# "GDP per capita over time"
+                   "lnpop",# "Population over time"
+                   "foreignfighter",# "Foreign fighters"
+                   "govmilsupport",# "Government support"
+                   "leftist",# "Leftist"
+                   "nonislamistrel",# "Non-Islamist religious claims"
+                   "muslimid",# "Muslim identity"
+                   "secsup_govgov",# "Government secondary support"
+                   "rebextpartdummy")# "Rebel support"
+
+## Names:
+term.mod.names <- c("Termination",
+                    "Islamist claim",
+                    "Had Change |1|",
+                    "Had Change |1.5|",
+                    "Had Change |2|",
+                    "Territory",
+                    "Duration",
+                    "War",
+                    "Number of groups",
+                    "Strong rebels",
+                    "Anocracy",
+                    "GDP per capita",
+                    "Population",
+                    "Muslim majority",
+                    "Oil",
+                    "Youth bulge",
+                    "Anocracy",
+                    "GDP p.c.",
+                    "Population",
+                    "Foreign fighters",
+                    "Gvt support",
+                    "Leftist",
+                    "Non-I. Rel. claims",
+                    "Muslim identity",
+                    "Gvt sec. support",
+                    "Rebel support") 
+
+datsubset <- terminationplus[,term.mod.vars]
+colnames(datsubset) <- term.mod.names
+
+corrmod2 <- cor(datsubset,
+                use="complete.obs")
+
+## Note: Hand crop b/c corrplot prints with huge margins
+## pdf(file="correlationPlotTermVars.pdf")
+corrplot(corrmod2,
+         method="shade",
+         ## type="lower",
+         order="hclust",
+         tl.cex = .8,
+         tl.col="black",
+         addrect=2,
+         mar=c(1,1,1,1))
+##dev.off()
+
+```
+
+## Manuscript Figure 3:
+
+The replication log for the Termination and Recurrence models are in the accompanying Stata Markdown output. I am including them here for convenience:
+  
+  ![Fig 3: Termination Model With Change](./images/TerminationCoefPlotUp.pdf){width=25%}
+
+## Appendix Figures 2-5, 10
+
+The following code replicates the group-year summary plots. 
+These are Appendix Figures 2 (AQAP), 3 (Abu Sayyaf), 4 (ULFA), 5 (LRA), and Appendix Figure 10a (PKK)
+
+```{r groupPlots, echo=FALSE}
+rm(list=ls())
+
+library(ggplot2)
+library(tidyverse)
+library(stargazer)
+library(ggrepel)
+
+load(file="./02dfyearsumAndRelatedTinyUpdate.Rdata")
+
+##Which groups had a delta of at least |1|:
+haddelta1 <- df.yearsum[which(
+  abs(df.yearsum$propdif.L1) >= 1),]
+
+c.groups <- unique(haddelta1$groupID) ## change groups
+a.groups <- unique(df.yearsum$groupID) ## all groups
+
+groups.nochange <- setdiff(a.groups,c.groups)
+
+subset <- df.yearsum[which(
+  df.yearsum$groupID %in% groups.nochange),]
+
+## Hamas framing: 
+## Footnote 7 in the text:
+print(subset[which(subset$groupID==209),
+             c("year", "frexWords")], n=32)
+
+#####################
+## Plots
+#####################
+## AQAP Case
+aqap.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==881),]
+
+#dim(aqap.sub) ## 916 x 53
+
+aqap.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 881), ]
+
+t1 <- unique(aqap.sub.year[which(
+  aqap.sub.year$propT1>.75),]$frexWords)
+
+t2 <- unique(aqap.sub.year[which(
+  aqap.sub.year$propT2>.75),]$frexWords)
+
+## Ggplot version:
+
+textanchor <- min(aqap.sub$year)+5
+num.articles <- dim(aqap.sub)[1]
+x.breaks <- min(unique(aqap.sub$year)):max(unique(aqap.sub$year))
+
+## highlight examples of stories before and after:
+## The following code identifies articles
+## The text is often messy, so the code extracts neatly formatted keywords
+
+cols <- c("id", "source_article",
+          "year", "maxtopic","scaledvalue")
+## want to highlight on both sides of the 2015 switch:
+
+t1.neg75 <- c("Al-Qaida kills 6 captured Yemeni rebels \n north of Aden")
+t2.75 <- c("'Qaeda' ambush kills 5 Yemen soldiers")
+
+## Make the subset and annotation columns:
+
+aqap.sub$highlight <- 0
+aqap.sub$caption <- ''
+
+aqap.sub[which(aqap.sub$id==203501), "highlight"] <- 1
+aqap.sub[which(aqap.sub$id==203501), "caption"] <- t2.75
+aqap.sub[which(aqap.sub$id==205671), "highlight"] <- 1
+aqap.sub[which(aqap.sub$id==205671), "caption"] <- t1.neg75
+
+aqap.sub[which(aqap.sub$id==718), "highlight"] <- 1
+aqap.sub[which(aqap.sub$id==718), "caption"] <- "Qaeda suspect kills two guards in Yemen hospital escape bid"
+
+aqap.sub[which(aqap.sub$id==220), "highlight"] <- 1
+aqap.sub[which(aqap.sub$id==220), "caption"] <- "Yemeni security forces said on alert for Qa'idah attacks in south"
+
+aqap.sub[which(aqap.sub$id==367164), "highlight"] <- 1
+aqap.sub[which(aqap.sub$id==367164), "caption"] <- "Al-Qaeda in Yemen claims attacks on Houthis despite defeat proclamation"
+
+
+## Directly annotate the stories on the plot:
+
+textanchor <- min(aqap.sub$year)+3
+
+p.aqap2 <-ggplot(aqap.sub, aes(x=year, y=scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=aqap.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  geom_label_repel(box.padding = 0.5,
+                   max.overlaps = Inf,
+                   data=as.data.frame(
+                     aqap.sub[which(aqap.sub$highlight==1),]),
+                   aes(label=caption))+
+  geom_point(data=as.data.frame(
+    aqap.sub[which(aqap.sub$highlight==1),]),
+    color = "red")+
+  annotate("text", x = textanchor, y =1.15,
+           label = paste0("Topic Two: ", t2))+
+  annotate("text", x =textanchor, y = -1.15,
+           label = paste0("Topic One: ", t1)) +
+  xlab("Year")+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("AQAP Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+
+p.aqap2
+
+ggsave(p.aqap2,
+       width=12, 
+       height=8,
+       units=c("in"),
+       file="./figures/annotedAQAPGraph.pdf")
+
+#############
+## Abu Sayyaf
+############
+
+as.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==277),]
+as.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 277), ]
+as.sub.year
+
+
+## FREX Words to overlay
+t1 <- unique(as.sub.year[which(
+  as.sub.year$propT1>.75),]$frexWords)
+
+t2 <- unique(as.sub.year[which(
+  as.sub.year$propT2>.75),]$frexWords)
+
+textanchor <- max(as.sub$year)-10
+num.articles <- dim(as.sub)[1]
+x.breaks <- min(unique(as.sub$year)):max(unique(as.sub$year))
+
+cols <- c("id","source_article",
+          "year", "maxtopic","scaledvalue")
+
+## Build in the highlighted articles
+## in a way that is efficient for ggplot:
+as.sub$highlight <- 0
+as.sub$caption <- ''
+
+## Captions:
+
+as.sub[which(as.sub$id== 124923),
+       "highlight"] <- 1
+as.sub[which(as.sub$id==124923),
+       "caption"] <- "Six Abu Sayyaf fighters, two soldiers dead in clash"
+
+as.sub[which(as.sub$id==123716),
+       "highlight"] <- 1
+as.sub[which(as.sub$id==123716),
+       "caption"] <- "Philippines foils rebel bid to escape hostage isle"
+
+as.sub[as.sub$id==298896, "caption"] <- "IS claims killing soldier in southern Philippines"
+as.sub[as.sub$id==298896, "highlight"] <- 1
+
+as.sub[which(as.sub$id== 203613),
+       "highlight"] <- 1
+as.sub[which(as.sub$id==203613),
+       "caption"] <- "Al-Qaeda-linked militants behead Philippine militiaman"
+
+
+textanchor <- max(as.sub$year)-10
+num.articles <- dim(as.sub)[1]
+x.breaks <- min(unique(as.sub$year)):max(unique(as.sub$year))
+
+p.as2 <-ggplot(as.data.frame(as.sub),
+               aes(x = year, y = scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_label_repel(box.padding = 0.5,
+                   max.overlaps = Inf,
+                   data=as.data.frame(
+                     as.sub[which(as.sub$highlight==1),]),
+                   aes(label=caption))+
+  geom_point(data=as.data.frame(
+    as.sub[which(as.sub$highlight==1),]),
+    color = "red")+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=as.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  xlab("Year")+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("Abu Sayyaf Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+
+p.as2
+
+ggsave(p.as2,
+       width=12, 
+       height=8,
+       units=c("in"),
+       file="./figures/annotedAbuSayyaf.pdf")
+
+#############
+## ULFA
+############
+
+ulfa.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==326),]
+ulfa.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 326), ]
+
+
+## Articles to highlight;
+
+ulfa.sub$highlight <- 0
+ulfa.sub$caption <- ''
+
+ulfa.sub[which(ulfa.sub$id==94984),"highlight"]  <- 1
+ulfa.sub[which(ulfa.sub$id==94984), "caption"] <- "TWO KILLED AS INDIAN TROOPS HUNT FOR GUERRILLAS IN ASSAM"
+
+ulfa.sub[which(ulfa.sub$id==95258), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==95258), "caption"] <- "Indian troops kill 12 rebels in troubled northeast"
+
+ulfa.sub[which(ulfa.sub$id==94990), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==94990), "caption"] <- "TWO POLICEMEN KILLED BY SUSPECTED ASSAM MILITANTS"
+
+ulfa.sub[which(ulfa.sub$id==95275), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==95275), "caption"] <- "One killed, seven wounded in grenade attack in northeast India"
+
+ulfa.sub[which(ulfa.sub$id==95084), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==95084), "caption"] <- "Five policemen, civilian killed in Assam ambush"
+
+ulfa.sub[which(ulfa.sub$id==156739), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==156739), "caption"] <- "Trader shot dead in Kokrajhar"
+
+ulfa.sub[which(ulfa.sub$id==67177), "highlight"] <- 1
+ulfa.sub[which(ulfa.sub$id==67177), "caption"] <- "ULFA militant killed, arms recovered"
+
+## FREX Words to overlay
+t1 <- unique(ulfa.sub.year[which(
+  ulfa.sub.year$propT1>.75),]$frexWords)
+
+t2 <- unique(ulfa.sub.year[which(
+  ulfa.sub.year$propT2>.75),]$frexWords)
+
+textanchor <- max(ulfa.sub$year)-10
+num.articles <- dim(ulfa.sub)[1]
+x.breaks <- min(unique(ulfa.sub$year)):max(unique(ulfa.sub$year))
+
+## Anotated graph
+
+textanchor <- max(ulfa.sub$year)-10
+num.articles <- dim(ulfa.sub)[1]
+x.breaks <- min(unique(ulfa.sub$year)):max(unique(ulfa.sub$year))
+
+p.ulfa2 <-ggplot(as.data.frame(ulfa.sub),
+                 aes(x = year, y = scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_label_repel(box.padding = 0.5,
+                   max.overlaps = Inf,
+                   data=as.data.frame(
+                     ulfa.sub[which(ulfa.sub$highlight==1),]),
+                   aes(label=caption))+
+  geom_point(data=as.data.frame(
+    ulfa.sub[which(ulfa.sub$highlight==1),]),
+    color = "red")+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=ulfa.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  xlab("Year")+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("UFLA Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+
+p.ulfa2 
+
+ggsave(p.ulfa2,
+       width=12, 
+       height=8,
+       units=c("in"),
+       file="./figures/annotedulfa.pdf")
+
+
+#############
+## LRA
+############
+
+lra.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==488),]
+lra.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 488), ]
+
+
+t1 <- unique(lra.sub.year[which(
+  lra.sub.year$propT1>.75),]$frexWords)
+
+t2 <-c("london,kill,rebel,africa,armi,new,vision")
+
+textanchor <- max(lra.sub$year)-10
+num.articles <- dim(lra.sub)[1]
+x.breaks <- min(unique(lra.sub$year)):max(unique(lra.sub$year))
+
+## Annotate
+
+lra.sub$caption <- ''
+lra.sub$highlight <- 0
+
+## Pull some articles to illustrate:             
+##lra.sub[which(lra.sub$year==1990 & 
+##             lra.sub$scaledvalue <= .5), cols]
+
+##lra.sub[which(lra.sub$year==2009 & 
+##             lra.sub$scaledvalue > .25), cols]
+
+##lra.sub[which(lra.sub$year==2017 & 
+##              lra.sub$scaledvalue <= .5), cols]
+
+lra.sub[which(lra.sub$id==36752), "highlight"] <- 1
+lra.sub[which(lra.sub$id==36752), "caption"] <- "UGANDAN REBELS KILL 20 PEOPLE"
+
+lra.sub[which(lra.sub$id==239443), "highlight"] <- 1
+lra.sub[which(lra.sub$id==239443), "caption"] <- "Uganda LRA rebels kill 'scores' in northern DR Congo"
+
+lra.sub[which(lra.sub$id==37656), "highlight"] <- 1
+lra.sub[which(lra.sub$id==37656), "caption"] <- "The Wizard of the Nile [The Hunt for Joseph Kony]"
+
+
+p.lra2 <-ggplot(as.data.frame(lra.sub),
+                aes(x = year, y = scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_label_repel(size=2.5,
+                   box.padding = .5,
+                   max.overlaps = Inf,
+                   data=as.data.frame(
+                     lra.sub[which(lra.sub$highlight==1),]),
+                   aes(label=caption))+
+  geom_point(data=as.data.frame(
+    lra.sub[which(lra.sub$highlight==1),]),
+    color = "red")+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=lra.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  xlab("Year")+
+  ylim(-1, 1)+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("LRA Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+
+p.lra2
+
+ggsave(p.lra2,
+       width=12, 
+       height=8,
+       units=c("in"),
+       file="./figures/annotedLRA.pdf")
+
+##############################
+## PKK
+#############################
+pkk.sub <- df.basedata[which(
+  df.basedata$side_b_dset_id==323),]
+pkk.sub.year <- df.yearsum[which(
+  df.yearsum$groupID == 323), ]
+
+## FREX Words to overlay
+t1 <- unique(pkk.sub.year[which(
+  pkk.sub.year$propT1>.75),]$frexWords)
+
+t2 <- unique(pkk.sub.year[which(
+  pkk.sub.year$propT2>.75),]$frexWords)
+
+## Plot
+
+textanchor <- max(pkk.sub$year)-10
+num.articles <- dim(pkk.sub)[1]
+x.breaks <- min(unique(pkk.sub$year)):max(unique(pkk.sub$year))
+
+p.pkk <-ggplot(pkk.sub, aes(x=year, y=scaledvalue))+
+  geom_jitter(width = 0.1, height = 0.1, alpha=.35)+
+  geom_hline(yintercept=0, size=.75,
+             color="red", alpha=.5) +
+  geom_line(data=pkk.sub.year, aes(y=propdiff, x=year),
+            color="darkgreen", linetype="dashed")+
+  annotate("text", x = textanchor, y =1.15, label = t2)+
+  annotate("text", x =textanchor, y = -1.15, label = t1) +
+  xlab("Year")+
+  scale_x_continuous(breaks=x.breaks,
+                     guide = guide_axis(n.dodge = 2))+
+  ylab("Proportion Topic 1 (-1) vs Topic 2 (1)") +
+  ggtitle("PKK Yearly Classification",
+          subtitle=paste0("N = ", num.articles," Articles"))+
+  theme_bw()
+p.pkk
+
+#ggsave(p.pkk, file="./figures/PKKYearPlots.pdf")
+
+```
+
+
+## Precision and Media Access Figures
+The following code produces Appendix Figures 6 and 7, which evaluate the effect of media access on estimated change points.
+
+These snippets address whether the approach is more likely to find changes in difficult reporting environments, which would suggest that what is being modeled is something other than behavioral changes.
+
+
+```{r pressure, echo=FALSE, warnings=FALSE}
+rm(list=ls())
+
+library(ggplot2)
+library(tidyverse)
+library(readxl)
+library(countrycode)
+library(sandwich)
+library(lmtest)
+library(plm)
+library(pscl)
+library(broom)
+
+outPath <- "./"
+
+load(file=paste0(outPath,
+                 "02dfyearsumAndRelatedTinyUpdate.Rdata"))
+
+
+## Convert from country-year to group-year
+## Idea: go into the df.basedata and merge in FH indicators
+## for the country and year that the event happened in
+## then take a per-group average?
+## Need year events x country and country scores
+
+df.basedata <- rename(df.basedata,
+                      groupID = side_b_new_id)
+
+df.precision <- df.basedata %>%
+  group_by(groupID, year, country_id) %>%
+  summarise(
+    mean.time.prec= mean(date_prec),
+    mean.loc.prec = mean(where_prec),
+    mean.clarity = mean(event_clarity)
+  )
+
+## Add in the country code:
+## via ccodes library
+
+df.precision$cow <- countrycode(df.precision$country_id,
+                                origin = "gwn",
+                                destination = "cowc")
+
+## Data source for journalism access
+## Goddes and Cary (2021 and 2017) dataset on journalist murders
+## They also us Freedom House Measures on media restrictions
+## (Presumably in their replication data)
+## & V-Dem's  Freedom of Expression and Alternative Sources of Information Index 
+
+meddat <- read_csv("./data/MSFS-estimates_full-3x2000.csv",
+                   show_col_types=FALSE)
+
+
+df.media <- df.precision %>%
+  left_join(meddat,
+            by = c("year"= "year",
+                   "cow" = "abbr"))
+
+## Bring group-year change info into the
+## group-country-year df.precision + media info
+
+df.precision2 <- df.media %>%
+  left_join(df.yearsum,
+            by=c("groupID"= "groupID",
+                 "year"= "year"))
+
+dat <-df.precision2 %>%
+  group_by(groupID, country_id, year) %>%
+  mutate(gcyid = cur_group_id()) ## creates a grouping id for group-country
+
+## Fixed effects by group
+## for change from previous year's ratio,
+## given precision and media freedom
+## BUT taking absolute value of the previous year change
+## because otherwise the [-1, 1] scale washes out any possible signal:
+
+## SE Grouped just at group level:
+## b/c group-country-year is the unit of analysis
+## so it's weird to group at that:
+
+mod2B<- plm(propdif.L1 ~ mean.loc.prec +
+              mean.clarity + mean.time.prec +  MSF,
+            model=c("random"),## random effects
+            effect="time", ## time fixed effects
+            index=c("groupID"),
+            data=dat)
+
+df <- tidy(mod2B)
+ci95 <- confint(mod2B, level=0.95) %>% 
+  data.frame() %>%
+  rename("conf.low95" = "X2.5..",
+         "conf.high95" = "X97.5..")
+
+ci90 <- confint(mod2B, level=0.9) %>% 
+  data.frame() %>%
+  rename("conf.low90" = "X5..",
+         "conf.high90" = "X95..")
+
+results <- bind_cols(df, 
+                     ci95, 
+                     ci90) %>%
+  rename(Variable = term,
+         Coefficient = estimate,
+         SE = std.error) %>%
+  filter(Variable != "(Intercept)")
+
+gg1 <- ggplot(results, 
+              aes(x = Variable, y = Coefficient)) +
+  geom_hline(yintercept = 0, 
+             colour = gray(1/2), lty = 2) +
+  geom_point(aes(x = Variable, 
+                 y = Coefficient)) + 
+  geom_linerange(aes(x = Variable, 
+                     ymin = conf.low90,
+                     ymax = conf.high90),
+                 lwd = 1) +
+  geom_linerange(aes(x = Variable, 
+                     ymin = conf.low95,
+                     ymax = conf.high95),
+                 lwd = 1/2) + 
+  ggtitle("Outcome: Yearly Proportion Changes",
+          subtitle= "S.E. Clustered by Group") +
+  coord_flip() +
+  theme_bw()
+
+gg1 ##Manuscript Fig
+ggsave(gg1,
+       file="./figures/lmAbsPropDifL1.pdf")
+
+## Another view:
+## Look at years since change and precision.
+## Which asks if it is the case that
+## presentation is more stable when information is
+## less precise
+## This is a zero inflated negative binomial since
+## have 0s from no changes & also zeros from year after deltas
+
+cols <- c("counter", "mean.loc.prec",
+          "mean.clarity","mean.time.prec",
+          "MSF", "groupID")
+
+## Need to remove NA for clustered errors:
+dat2 <- na.omit(dat[,cols]) ## 2298 x 6
+
+mod3 <- zeroinfl(counter ~ mean.loc.prec +
+                   mean.clarity + mean.time.prec +  MSF,
+                 data=dat2,
+                 dist="negbin")
+
+mod3ci <- coeftest(mod3,
+                   vcov = vcovCL(mod3, cluster = dat2$groupID))
+
+df <- tidy(mod3ci) ## then exoponentiate the coef:
+
+ci95 <- confint(mod3ci, level=0.95) %>% 
+  data.frame() %>%
+  rename("conf.low95" = "X2.5..",
+         "conf.high95" = "X97.5..")
+
+ci90 <- confint(mod3ci, level=0.9) %>% 
+  data.frame() %>%
+  rename("conf.low90" = "X5..",
+         "conf.high90" = "X95..")
+
+results <- bind_cols(df, 
+                     ci95, 
+                     ci90) %>%
+  rename(Variable = term,
+         Coefficient = estimate,
+         SE = std.error) %>%
+  filter(Variable != "(Intercept)")
+
+
+gg2 <- ggplot(results, 
+              aes(x = Variable, y = Coefficient)) +
+  geom_hline(yintercept = 0, 
+             colour = gray(1/2), lty = 2) +
+  geom_point(aes(x = Variable, 
+                 y = Coefficient)) + 
+  geom_linerange(aes(x = Variable, 
+                     ymin = conf.low90,
+                     ymax = conf.high90),
+                 lwd = 1) +
+  geom_linerange(aes(x = Variable, 
+                     ymin = conf.low95,
+                     ymax = conf.high95),
+                 lwd = 1/2) + 
+  ggtitle("Outcome: Years Since Change Period",
+          subtitle="S.E. Clustered by Group ID; Model Neg Bin") +
+  coord_flip() +
+  theme_bw()
+
+gg2 ## Manuscript Appendix Fig
+ggsave(gg2,
+       file="./figures/negBinomMedia.pdf")
+
+
+```
+
+## Appendix Section: Changing Number of Topics
+
+The analysis for Appendix Section 5: Topic Model Specifications are captured here. They are produced by 
+`implementAltPKKAQAP.R` (Appendix Table 1, Appendix Figure 9, Appendix Figure 10 (right)).
+
+The plots are included below for convenience, from the files produced in the repository:
+  
+  Appendix Figure 9:
+  
+  ONLF Alternate Specifications
+
+![ONLF Search K Results](./images/searchKplotGroup-onlf.pdf){width=25%}
+![ONLF Topic Comparisons](./images/ONLFtopiccomparisions.pdf){width=25%}
+
+LRA Alternate Specifications
+
+![LRA Search K Results.](./images/searchKplotGroup-lra.pdf){width=25%}
+![LRA Topic Comparisons](./images/LRAtopiccomparisions.pdf){width=25%}
+
+## Figures from STATA analysis
+
+The following compiles the figures produced by the STATA .do files:
+  
+  ## Appendix Figure 13: Termination model with additional time covariates:
+  
+  ![Termination Model with censored time windows](./images/TerminationCoefPlotExtUp.pdf){width=39=30%}
+
+## Appendix Figure 14 
+
+![Recurrence model](./images/ReplCoefPlot.pn){width=30%}
+
+## Appendix Figure 8
+
+Effect of minimum document requirements on regression output.
+These plots are produced by STATA and saved into the ./images/ directory. They are collected here for convenience:
+  
+  Top row:
+  
+  ![T1, 75](./images/thresh_1_75.pdf){width=10%}
+
+![T1, 90](./images/thresh_1_90.pdf){width=10%}
+
+![T1, 100](./images/thresh_1_1.pdf){width=10%}
+
+Middle row:
+  
+  ![T5, 75](./images/thresh_5_75.pdf){width=10%}
+
+![T5, 90](./images/thresh_5_90.pdf){width=10%}
+
+![T5, 100](./images/thresh_5_1.pdf){width=10%}
+
+Bottom row:
+  
+  ![T10, 75](./images/thresh_5_75.pdf){width=10%}
+
+![T10, 90](./images/thresh_5_90.pdf){width=10%}
+
+![T10, 100](./images/thresh_5_1.pdf){width=10%}
