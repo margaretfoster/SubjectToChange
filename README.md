@@ -5,7 +5,7 @@ Welcome! This repository contains code to estimate "change" years for organized 
 The output summarizes potential years in which third-party observers changed the underlying thematic presentation of each militant group's activities.
 
 A single group-level example looks like:
-![Activity modeling for Abu Sayyaf](https://github.com/margaretfoster/SubjectToChange/blob/master/images/annotedAbuSayyaf.pdf)
+![Activity modeling for Abu Sayyaf](https://github.com/margaretfoster/SubjectToChange/blob/master/images/annotedAbuSayyaf.pdf), which estimates that the Phillipines-based group had "change" years in approximately 2001, 2003, 2007/2008, and 2019.
 
 ## Overview:
 
