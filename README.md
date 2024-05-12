@@ -1,6 +1,6 @@
 # Subject to Change (Foster 2024)
 
-Welcome! This repository contains code to estimate "change" years for organized non-state violent conflict actors whose activities are tracked by the Uppsala Conflict Data Program.
+Welcome! This repository contains code that uses machine learning to estimate "change" years for organized non-state violent conflict actors whose activities are tracked by the Uppsala Conflict Data Program.
 
 The output summarizes potential years in which third-party observers changed the underlying thematic presentation of each militant group's activities.
 
