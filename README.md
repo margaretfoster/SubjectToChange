@@ -1,8 +1,11 @@
-## Subject to Change (Foster 2024)
+# Subject to Change (Foster 2024)
 
 Welcome! This repository contains code to estimate "change" years for organized non-state violent conflict actors whose activities are tracked by the Uppsala Conflict Data Program.
 
 The output summarizes potential years in which third-party observers changed the underlying thematic presentation of each militant group's activities.
+
+A single group-level example looks like:
+![Activity modeling for Abu Sayyaf](https://github.com/margaretfoster/SubjectToChange/blob/master/images/annotedAbuSayyaf.pdf)
 
 ## Overview:
 
@@ -16,10 +19,16 @@ The code in this repository:
     - binary "actor change" variable
     - time series actor-country-year change records
 
+- Inserts the variable in a previous study about the effects of uncertanty on the length of substate conflict, more directly capturing the dynamic of interest and increasing the precison of the study's estimate
 
+## Data
 
-## Using the code
+The data used for the analysis (along with copies of code, plots, and full run logs) can be found in the [Harvard Dataverse repository associated with this project](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi%3A10.7910%2FDVN%2F1HNSZR). The .zip file includes the underlying event data, media precision, and study extension data as well as the intermediate .Rdata files produced from the R code.
+
+## Using the repository
+
 This repository replicates the analysis needed to produce the data and results in the paper.
+
 There are several ways to use the repository:
 
 (1) A full replication is handled by STC_R_Replication_Log.Rmd (Master Log)
@@ -59,7 +68,6 @@ Logs for the entire project are available at:
 
 ./STC_R_Replication_Log.html
 ./Logs/[R_file_name_here].html 
-
 
 (3b) STATA-based analysis
 
