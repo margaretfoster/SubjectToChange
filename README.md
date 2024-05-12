@@ -4,8 +4,9 @@ Welcome! This repository contains code to estimate "change" years for organized 
 
 The output summarizes potential years in which third-party observers changed the underlying thematic presentation of each militant group's activities.
 
-A single group-level example looks like:
-![Activity modeling for Abu Sayyaf](https://github.com/margaretfoster/SubjectToChange/blob/master/images/annotedAbuSayyaf.pdf), which estimates that the Phillipines-based group had "change" years in approximately 2001, 2003, 2007/2008, and 2019.
+A single group-level example looks like: ![Activity modeling for Abu Sayyaf](https://github.com/margaretfoster/SubjectToChange/blob/master/images/annotedAbuSayyaf.pdf), which estimates that the Philippines- based jihadi insurgency underwent "change" periods in approximately 2001, 2003, 2007/2008, and 2019.
+
+One might use the measure to improve predictions of conflict dynamics, such as ![in this model](https://github.com/margaretfoster/SubjectToChange/blob/master/images/TerminationCoefPlotExtUp.pdf), which presents coefficient estimates of a Cox proportional hazards [survival] model indicating that non-state actors with any change years tend to be associated with longer conflicts, as do groups with more "change" periods.
 
 ## Overview:
 
@@ -17,9 +18,9 @@ The code in this repository:
 - Models the group-level trends to identify points where third-party writers change how they write about the activities of actors
 - Creates a dataset that operationalizes the above into a:
     - binary "actor change" variable
-    - time series actor-country-year change records
+    - time-series actor-country-year change records
 
-- Inserts the variable in a previous study about the effects of uncertanty on the length of substate conflict, more directly capturing the dynamic of interest and increasing the precison of the study's estimate
+- Inserts the variable in a previous study about the effects of uncertainty on the length of substate conflict, more directly capturing the dynamic of interest and increasing the precision of the study's estimate
 
 ## Data
 
@@ -52,11 +53,11 @@ do STC_STATA_Rep_All.do
 
 The log of these scripts is STC_STATA_Log.pdf.
 
-Note that a fresh replication needs to run the R scripts first, because the R scripts produce the original data. 
+Note that a fresh replication needs to run the R scripts first because the R scripts produce the original data. 
 
 (3) Compilation of tables and figures
 
-The logs themselves are long and complex (with a lot of printouts), so for convenience I have aggregated all of the tables and figures into a single printout.
+The logs themselves are long and complex (with a lot of printouts), so for convenience, I have aggregated all of the tables and figures into a single printout.
 
 Replication_Figures.Rmd, which produces a pdf (Replication_Figures.pdf) of the figures and tables that are featured in the Manuscript and appendix.
 
@@ -78,3 +79,4 @@ A log of the STATA run can be found in:
 
 
 
+ 
