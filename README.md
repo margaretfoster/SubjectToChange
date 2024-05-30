@@ -8,6 +8,7 @@ A single group-level example looks like: ![Activity modeling for Abu Sayyaf](htt
 
 One might use the measure to improve predictions of conflict dynamics, such as ![in this model](https://github.com/margaretfoster/SubjectToChange/blob/master/images/TerminationCoefPlotExtUp.pdf), which presents coefficient estimates of a Cox proportional hazards [survival] model indicating that non-state actors with any change years tend to be associated with longer conflicts, as do groups with more "change" periods.
 
+You can find a high-level presentation of the project [here.](https://github.com/margaretfoster/slides/blob/main/Foster-TargetRWETalk_2024.pdf)
 ## Overview:
 
 The code in this repository:
