@@ -26,43 +26,33 @@ The code in this repository:
 
 The data used for the analysis (along with copies of code, plots, and full run logs) can be found in the [Harvard Dataverse repository associated with this project](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi%3A10.7910%2FDVN%2F1HNSZR). The .zip file includes the underlying event data, media precision, and study extension data as well as the intermediate .Rdata files produced from the R code.
 
+The processed change variable can be downloaded in the [Data subdirectory](./data/group_years_regions.csv/)
+
 ## Using the repository
 
 This repository replicates the analysis needed to produce the data and results in the paper.
 
-There are several ways to use the repository:
+It also features Jupyter Notebook scripts that allow potential users to interact with the new "change" variable. 
 
-(1) A full replication is handled by STC_R_Replication_Log.Rmd (Master Log)
- 
-This Markdown file calls each of the scripts in sequence to take in the UCDP GED data and produce the change measurement. It uses the GroundhogR dependency management framework to ensure library consistency. It concludes with some light directory cleanup. 
+### Replication
+The workflow to do a full replication is:
 
-Each R script called by STC_R_Replication_Log.Rmd produces an html log, housed in the Logs/ subdirectory.
-
-STC_R_Replication_Log.Rmd takes 6 - 8 hours to run on an Apple M1 Pro laptop.
-
-(2) STATA analysis
-
-The application of the measurement is done via a replication of a STATA script, STC_STATA_Replication.do
-
-An evaluation of the effects of changing inclusion thresholds is in STC_STATA_Rep_All.do.
-
-To run them, you can open STATA and call:
-
+1) Knit STC_R_Replication_Log.Rmd
+This Markdown file calls each of the scripts in sequence to take in the UCDP GED data and produce the change measurement. It uses the GroundhogR dependency management framework to ensure library consistency. It concludes with some light directory cleanup.  Each R script called by STC_R_Replication_Log.Rmd produces an html log, housed in the Logs/ subdirectory. (STC_R_Replication_Log.Rmd takes 6 - 8 hours to run on an Apple M1 Pro laptop.)
+  
+2) Open STATA and call:
 do STC_STATA_Replication.do
 do STC_STATA_Rep_All.do
 
-The log of these scripts is STC_STATA_Log.pdf.
+The application of the measurement is done via a replication of a STATA script, STC_STATA_Replication.do
+An evaluation of the effects of changing inclusion thresholds is in STC_STATA_Rep_All.do. The log of these scripts is STC_STATA_Log.pdf.
 
-Note that a fresh replication needs to run the R scripts first because the R scripts produce the original data. 
-
-(3) Compilation of tables and figures
+3) Knit Replication_Figures.Rmd
 
 The logs themselves are long and complex (with a lot of printouts), so for convenience, I have aggregated all of the tables and figures into a single printout.
-
 Replication_Figures.Rmd, which produces a pdf (Replication_Figures.pdf) of the figures and tables that are featured in the Manuscript and appendix.
 
-(4) Code Run Logs
-
+### Logs
 Logs for the entire project are available at:
 
 (3a) R-based analysis
