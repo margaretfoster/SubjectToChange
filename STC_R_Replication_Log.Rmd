@@ -1,0 +1,171 @@
+---
+title: "STC_Replication_All_Log"
+author: "Margaret J. Foster"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Replication Log for Foster (2024) Subject to Change
+
+This Markdown script calls the component files needed to produce the Subject to Change text-based change metric. This script demonstrates the operation and output of the scripts that produce the component data and generates logs of each script. 
+
+The component scripts themselves are loquacious, with comments and summaries throughout. I include these to help any user get a sense of how each component fits together and what is happening under the hood.
+
+To replication just the production of the plots and figures in the paper (without generating the data), see `ReplicationRLog.Rmd` and the resulting `ReplicationRLog.pdf` R markdown output.
+
+For a replication (and log) of the application, see `STC_STATA_Rep_All.do`
+
+## Libraries and version control
+```{r libaries, message=FALSE}
+
+library("groundhog")
+
+
+## The important version to be aware of is that
+## quanteda had a major change between versions 3 and 4
+## The results replicate with quanteda V3, which was how it was developed
+
+options(repos="https://cloud.r-project.org")
+
+
+groundhog_day_deps <- "2023-11-21" ##
+groundhog.library(c("MASS", "Matrix", "RcppArmadillo", 
+                    "fastmatch", "RcppParallel","Rcpp",
+                    "SnowballC", "stopwords"),
+                  groundhog_day_deps,
+                  tolerate.R.version='4.3.3')
+
+groundhog_day <- "2024-02-01" ##
+
+groundhog.library(c("quanteda", "ggplot2", "ggridges", "readxl", "stargazer", 
+                    'tidyverse', 'readxl',
+                    "stm", "stringi", "ggrepel", "ggplot2",
+                    "ggridges", "countrycode", "sandwich", "lmtest", "plm",
+                    "broom", "corrplot", "haven", 'pscl', "broom"),
+                  groundhog_day,
+                  ignore.deps = c("MASS", "Matrix", "RcppArmadillo", 
+                                  "fastmatch", "RcppParallel",
+                                  "SnowballC", "stopwords", 
+                                  'Rcpp', 'ISOcodes'),
+                  tolerate.R.version='4.3.3')
+
+groundhog.library(c("quanteda"), #yes, this is in twice
+                  groundhog_day)
+
+sessionInfo()
+
+```
+
+## Data Procesing
+
+```{r measurement, echo=TRUE, message=TRUE}
+rmarkdown::render("./01measurementFullDataTinyThreshRep.R")
+```
+
+## Estimating Change
+
+Runtime: Approximately 5 minutes on 32G Apple M1 2021 Macbook Pro
+
+```{r transform, echo=TRUE, message=FALSE}
+rmarkdown::render("./02tinyThreshTransformVarRep.R")
+```
+
+
+```{r estimate, echo=TRUE, message=FALSE}
+rmarkdown::render("./03analysisFullDataTinyThreshRep.R")
+```
+
+## Prepare the terminaion and recurrance application
+
+```{r termination, echo=TRUE, message=FALSE}
+rmarkdown::render("./04nsPrepTerminationRep.R")
+```
+
+```{r replication, echo=TRUE, message=FALSE}
+rmarkdown::render("./04nsPrepRecurrance.R")
+```
+
+## Highlighting group plots
+
+Produce the spotlight plots, along with qualitative views into the data. 
+
+```{r groupplots, echo=TRUE, message=FALSE}
+rmarkdown::render("./analysisGroupPlotsRep.R")
+```
+
+
+Analysis of the effects of location precision on the change variable: 
+```{r precision, echo=TRUE, message=FALSE}
+rmarkdown::render("./03ClocationPrecisionRep.R")
+```
+
+## Analysis of sensitivity to sparseness
+
+Note that "RobustnessPanel.R" requires several hours to run because it does a gridsearch of the entire data 
+generating process for 9 different inclusion thresholds. Each round take about 45 minutes to run.
+
+```{r threshold, echo=TRUE, message=FALSE}
+rmarkdown::render("./RobustnessPanel.R")
+```
+
+
+```{r altspec, echo=TRUE, message=FALSE}
+rmarkdown::render("./checkAlternateSpecTiny.R")
+```
+
+## Analysis of effects of changing the K
+
+Focus on PKK and AQAP (Appendix Figure 10)
+
+```{r altspec_k, echo=TRUE, message=FALSE}
+rmarkdown::render("./implementAltPKKAQAP.R")
+```
+
+
+```
+## Directory cleanup
+
+The analysis scripts have generated a lot of pdf files. 
+Here we'll do a quick cleanup run. This chunk:
+- Moves all .pdf and .png files into an ./images/ subdirectory
+- Moves all .html files into the ./Logs/ subdirectory
+
+```{r dircleanup, echo=TRUE, message=FALSE}
+
+origin_dir<- paste0(getwd(), "/")
+
+## These are images
+pdf_files <- list.files(path = origin_dir, 
+                        pattern = "\\.pdf$",
+                        full.names = FALSE)
+
+## These are logs
+html_files <- list.files(path =  origin_dir, 
+                        pattern = "\\.html$",
+                        full.names = FALSE)
+
+txt_files <- list.files(path =  origin_dir, 
+                        pattern = "\\.txt$",
+                        full.names = FALSE)
+
+
+## Move pdfs:
+pdf_dir <- "./images/"
+for (file in pdf_files) {
+  origin_file <- paste0(origin_dir, file)
+  dest_file <- paste0(pdf_dir, file)
+  file.rename(from = origin_file, to = dest_file)
+}
+
+logs_dir <- "./Logs/"
+for (file in c(html_files, txt_files)) {
+  origin_file <- paste0(origin_dir, file)
+  dest_file <- paste0(logs_dir, file)
+  file.rename(from = origin_file, to = dest_file)
+}
+
+```
