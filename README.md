@@ -2,7 +2,8 @@
 
 Welcome! This repository contains code that uses machine learning to estimate "change" years for organized non-state violent conflict actors whose activities are tracked by the Uppsala Conflict Data Program.
 
-You can find the slides for a high-level presentation of the project [here.](https://github.com/margaretfoster/slides/blob/main/Foster-TargetRWETalk_2024.pdf)
+You can [explore the data](https://stc-visualizer.onrender.com) at the associated dashboard, hosted by Render. Heads up that it will take about a minute to load.
+Slides for a high-level presentation of the project [here.](https://github.com/margaretfoster/slides/blob/main/Foster-TargetRWETalk_2024.pdf)
 A link to the peer-reviewed manuscript is forthcoming.
 ## Project Overview
 
