@@ -3,8 +3,11 @@
 Welcome! This repository contains code that uses machine learning to estimate "change" years for organized non-state violent conflict actors whose activities are tracked by the Uppsala Conflict Data Program.
 
 You can [explore the data](https://stc-visualizer.onrender.com) at the associated dashboard, hosted by Render. Heads up that it will take about a minute to load.
+If you like what you see, you [can download the processed .csv](https://github.com/margaretfoster/SubjectToChange/blob/master/data/group_years_regions.csv) and incorporate it into your workflow.
+
 Slides for a high-level presentation of the project [here.](https://github.com/margaretfoster/slides/blob/main/Foster-TargetRWETalk_2024.pdf)
 A link to the peer-reviewed manuscript is forthcoming.
+
 ## Project Overview
 
 The output summarizes potential years in which third-party observers changed the underlying thematic presentation of non-state miltiant groups tracked in the UCDP's [Georeferenced Events Dataset v 21.1](https://ucdp.uu.se/downloads/olddw.html)).
